@@ -1,0 +1,22 @@
+# Java
+*.class
+*.log
+
+# Eclipse
+.project
+.classpath
+.settings/
+.metadata/
+
+# Maven / Gradle
+target/
+build/
+
+# Tomcat / Server
+Servers/
+tomcat/
+bin/
+
+# OS
+.DS_Store
+Thumbs.db
