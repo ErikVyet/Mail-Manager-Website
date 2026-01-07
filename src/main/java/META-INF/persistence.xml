@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.2" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
-	<persistence-unit name="Mail Manager Website">
+	<persistence-unit name="Mail Manager Website" transaction-type="RESOURCE_LOCAL">
+		<class>model.User</class>
+		<class>model.Folder</class>
+		<class>model.Email</class>
+		<class>model.Attachment</class>
+		<class>model.RecipientId</class>
+		<class>model.Recipient</class>
+		<class>model.DetailId</class>
+		<class>model.Detail</class>
+		<properties>
+			<property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/mail_db"/>
+			<property name="javax.persistence.jdbc.user" value="root"/>
+		</properties>
 	</persistence-unit>
 </persistence>
