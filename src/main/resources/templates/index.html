@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/index.css">
+    <script type="text/javascript" src="/js/index.js"></script>
+    <title>VMail</title>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <button onclick="collapseNav(this)" class="menu-button">
+                <img src="/image/menu.png">
+            </button>
+            <div class="banner">
+                <img src="/image/brand.svg">
+            </div>
+            <div class="search">
+                <button onclick="" class="search-button" title="Search">
+                    <img src="/image/search.png">
+                </button>
+                <input type="text" class="search-input" placeholder="Search mail" autocomplete="off">
+                <button onclick="openMailFilterDialog()" class="filter-button" title="Filter">
+                    <img src="/image/filter.png">
+                </button>
+            </div>
+            <div class="profile">
+                <button onclick="" class="help-button" title="Help">
+                    <img src="/image/help.png">
+                </button>
+                <button onclick="" class="mode-button" title="Toggle Dark/Light Mode">
+                    <img src="/image/darkmode.png">
+                </button>
+                <button onclick="openProfileDialog()" class="profile-button" title="Profile">
+                    <img src="/image/profile.png">
+                </button>
+            </div>
+        </header>
+        <nav class="nav-icon">
+            <button onclick="openDraftEmailDialog()" class="compose-button" title="Compose">
+                <img src="/image/compose.png">
+            </button>
+            <ul>
+                <li>
+                    <button onclick="navItemActive(0)" onmouseover="navItemHover(0)" onmouseout="navItemOut(0)" title="Inbox">
+                        <img src="/image/inbox.png">
+                    </button>
+                </li>
+                <li>
+                    <button onclick="navItemActive(1)" onmouseover="navItemHover(1)" onmouseout="navItemOut(1)" title="Starred">
+                        <img src="/image/starred.png">
+                    </button>
+                </li>
+                <li>
+                    <button onclick="navItemActive(2)" onmouseover="navItemHover(2)" onmouseout="navItemOut(2)" title="Sent">
+                        <img src="/image/sent.png">
+                    </button>
+                </li>
+                <li>
+                    <button onclick="navItemActive(3)" onmouseover="navItemHover(3)" onmouseout="navItemOut(3)" title="Drafts">
+                        <img src="/image/draft.png">
+                    </button>
+                </li>
+                <li>
+                    <button onclick="navItemActive(4)" onmouseover="navItemHover(4)" onmouseout="navItemOut(4)" title="All Mail">
+                        <img src="/image/all-mail.png">
+                    </button>
+                </li>
+                <li>
+                    <button onclick="navItemActive(5)" onmouseover="navItemHover(5)" onmouseout="navItemOut(5)" title="Trash">
+                        <img src="/image/trash.png">
+                    </button>
+                </li>
+                <li>
+                    <button onclick="openRemoveExistedLabelDialog()" onmouseover="navItemHover(6)" onmouseout="navItemOut(6)" title="Remove Existed Label">
+                        <img src="/image/remove.png">
+                    </button>
+                </li>
+                <li style="margin-bottom: 1vw;">
+                    <button onclick="" onmouseover="navItemHover(7)" onmouseout="navItemOut(7)" title="Create New Label">
+                        <img src="/image/create.png">
+                    </button>
+                </li>
+            </ul>
+        </nav>
+        <nav class="nav-label">
+            <ul>
+                <li onclick="navItemActive(0)" onmouseover="navItemHover(0)" onmouseout="navItemOut(0)">Inbox</li>
+                <li onclick="navItemActive(1)" onmouseover="navItemHover(1)" onmouseout="navItemOut(1)">Starred</li>
+                <li onclick="navItemActive(2)" onmouseover="navItemHover(2)" onmouseout="navItemOut(2)">Sent</li>
+                <li onclick="navItemActive(3)" onmouseover="navItemHover(3)" onmouseout="navItemOut(3)">Drafts</li>
+                <li onclick="navItemActive(4)" onmouseover="navItemHover(4)" onmouseout="navItemOut(4)">All Mail</li>
+                <li onclick="navItemActive(5)" onmouseover="navItemHover(5)" onmouseout="navItemOut(5)">Trash</li>
+                <li onclick="openRemoveExistedLabelDialog()" onmouseover="navItemHover(6)" onmouseout="navItemOut(6)">Remove Existed Label</li>
+                <li onclick="openCreateNewLabelDialog()" onmouseover="navItemHover(7)" onmouseout="navItemOut(7)" style="margin-bottom: 1vw;">Create New Label</li>
+            </ul>
+        </nav>
+        <main>
+            <div class="mail-list-control">
+                <div class="mail-control">
+                    <div>
+                        <input type="checkbox" class="select-all-checkbox" title="Select All" onchange="onSelectAllCheckboxChange(this.checked)">
+                        <select name="bulk-action" class="bulk-action-select" onchange="performBulkAction(this.value)">
+                            <option value="0">All</option>
+                            <option value="1">None</option>
+                            <option value="2">Read</option>
+                            <option value="3">Unread</option>
+                            <option value="4">Starred</option>
+                            <option value="5">Unstarred</option>
+                        </select>
+                    </div>
+                    <div class="mail-refresh-control">
+                        <button class="mail-refresh-button" title="Refresh" onclick="">
+                            <img src="/image/refresh.png">
+                        </button>
+                    </div>
+                    <div class="mail-other-control">
+                        <button class="mail-delete-button" title="Delete" onclick="">
+                            <img src="/image/trash.png">
+                        </button>
+                        <button class="mail-mark-read-button" title="Mark as read" onclick="">
+                            <img src="/image/mark-as-read.png">
+                        </button>
+                        <button class="mail-move-to-button" title="Move to" onclick="openMoveToDialog()">
+                            <img src="/image/move-to.png">
+                        </button>
+                    </div>
+                </div>
+                <div class="page-control">
+                    <button class="previous-page-button" onclick="">
+                        <img src="/image/previous.png">
+                    </button>
+                    <a class="page-number" onclick="">1 of INF</a>
+                    <button class="next-page-button" onclick="">
+                        <img src="/image/next.png">
+                    </button>
+                </div>
+            </div>
+            <div class="mail-container">
+                <table class="mail-list-table">
+                    <tbody>
+                        <tr onclick="" onmouseover="onTableRowMouseOver(this)" onmouseout="onTableRowMouseOut(this)">
+                            <td>
+                                <input type="checkbox" name="selected-mail" class="select-checkbox" onchange="onSelectCheckboxChange(this.checked, this.parentNode.parentNode)">
+                                <button class="starred-button" onclick="changeStarredStatus(this)">
+                                    <input type="hidden" value="false" name="starred">
+                                    <svg width="1.4vw" viewBox="0 0 200 200">
+                                        <polygon points="100,10 120,75 190,75 135,115 155,180 100,140 45,180 65,115 10,75 80,75" class="unstarred-icon" />
+                                    </svg>
+                                </button>
+                                <input type="hidden" value="true" name="read">
+                                <input type="hidden" value="false" name="draft">
+                                <input type="hidden" value="1" name="id">
+                            </td>
+                            <td>GitHub</td>
+                            <td>Fuck you</td>
+                            <td>01/01/2004</td>
+                        </tr>
+                        <tr onclick="" onmouseover="onTableRowMouseOver(this)" onmouseout="onTableRowMouseOut(this)" class="unread-mail">
+                            <td>
+                                <input type="checkbox" name="selected-mail" class="select-checkbox" onchange="onSelectCheckboxChange(this.checked, this.parentNode.parentNode)">
+                                <button class="starred-button" onclick="changeStarredStatus(this)">
+                                    <input type="hidden" value="true" name="starred">
+                                    <svg width="1.4vw" viewBox="0 0 200 200">
+                                        <polygon points="100,10 120,75 190,75 135,115 155,180 100,140 45,180 65,115 10,75 80,75" class="starred-icon" />
+                                    </svg>
+                                </button>
+                                <input type="hidden" value="false" name="read">
+                                <input type="hidden" value="false" name="draft">
+                                <input type="hidden" value="2" name="id">
+                            </td>
+                            <td>Facebook</td>
+                            <td>Send jesus</td>
+                            <td>03/03/2004</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4">123</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <dialog class="create-new-label-dialog">
+        <h2>New label</h2>
+        <div class="create-new-label-dialog-control">
+            <label>Please enter a new label name:</label>
+            <input type="text" name="new-label-name" autocomplete="off" oninput="enableCreateNewLabelButton(this.value)">
+        </div>
+        <div class="create-new-label-dialog-buttons">
+            <button onclick="closeCreateNewLabelDialog()">Cancel</button>
+            <button onclick="createNewLabel()" disabled>Create</button>
+        </div>
+    </dialog>
+
+    <dialog class="remove-existed-label-dialog">
+        <h2>Remove label</h2>
+        <div class="remove-existed-label-dialog-control">
+            <label>Please select a label to remove:</label>
+            <select name="existed-label-name" onchange="enableRemoveExistedLabelButton(this.value)">
+                <option value="" selected disabled>Select a label</option>
+            </select>
+        </div>
+        <div class="remove-existed-label-dialog-buttons">
+            <button onclick="closeRemoveExistedLabelDialog()">Cancel</button>
+            <button onclick="removeExistedLabel()" disabled>Remove</button>
+        </div>
+    </dialog>
+
+    <dialog class="move-to-dialog">
+        <div>
+            <button onclick="closeMoveToDialog()">
+                <img src="/image/close.png">
+            </button>
+        </div>
+        <div>
+            <ul>
+                <li>123</li>
+                <li onclick="">Trash</li>
+                <hr/>
+                <li onclick="">Create New Label</li>
+            </ul>
+        </div>
+    </dialog>
+
+    <dialog class="draft-email-dialog">
+        <div class="draft-email-dialog-content">
+            <div class="draft-email-dialog-header">
+                <h4>New Message</h4>
+                <div>
+                    <button onclick="closeDraftEmailDialog('save')" title="Save & close">
+                        <img src="/image/close.png">
+                    </button>
+                </div>
+            </div>
+            <div class="draft-email-dialog-body">
+                <div class="draft-email-dialog-field">
+                    <label>To:</label>
+                    <input type="text" name="to" autocomplete="off" placeholder="Recipients (To)" onfocus="onDraftEmailDialogFieldFocus(this)">
+                </div>
+                <div class="draft-email-dialog-field">
+                    <label>Cc:</label>
+                    <input type="text" name="cc" autocomplete="off" placeholder="Recipients (Cc)" onfocus="onDraftEmailDialogFieldFocus(this)">
+                </div>
+                <div class="draft-email-dialog-field">
+                    <label>Bcc:</label>
+                    <input type="text" name="bcc" autocomplete="off" placeholder="Recipients (Bcc)" onfocus="onDraftEmailDialogFieldFocus(this)">
+                </div>
+                <div class="draft-email-dialog-field">
+                    <label>Subject:</label>
+                    <input type="text" name="draft-subject" autocomplete="off" placeholder="Subject" onfocus="onDraftEmailDialogFieldFocus(this)">
+                </div>
+                <div class="draft-email-dialog-field">
+                    <div name="draft-body" contenteditable="true"></div>
+					<div class="draft-body-attached-files">
+                        <!-- <div class="attached-file" title="Attached file">
+                            <button onclick="" title="Remove attached file"></button>
+                        </div>
+                        <div class="attached-image" title="Attached image">
+                            <button onclick="" title="Remove attached image"></button>
+                        </div> -->
+                    </div>
+                </div>
+				
+            </div>
+            <div class="draft-email-dialog-buttons">
+                <div>
+                    <button onclick="">Send</button>
+                    <button onclick="this.getElementsByTagName('input')[0].click()" title="Attach files">
+						<input type="file" accept="text/*,application/*" oninput="onAttachFilesInputChange(this)" multiple hidden/>
+                        <img src="/image/attachment.png">
+                    </button>
+                    <button onclick="openInsertLinkDialog()" title="Insert link">
+                        <img src="/image/link.png">
+                    </button>
+                    <button onclick="this.getElementsByTagName('input')[0].click()" title="Insert photo">
+						<input type="file" accept="image/*" oninput="onAttachImagesInputChange(this)" multiple hidden/>
+                        <img src="/image/image.png">
+                    </button>
+                </div>
+                <div>
+                    <button onclick="closeDraftEmailDialog(null)" title="Discard draft">
+                        <img src="/image/trash.png">
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <dialog class="insert-link-dialog">
+            <div class="insert-link-dialog-content">
+                <div class="insert-link-dialog-header">
+                    <button onclick="closeInsertLinkDialog()">
+                        <img src="/image/close.png">
+                    </button>
+                </div>
+                <div class="insert-link-dialog-body">
+                    <div class="insert-link-dialog-field">
+                        <img src="/image/align-left.png">
+                        <input type="text" name="link-text" autocomplete="off" placeholder="Text" oninput="onInsertLinkInputChange()">
+                    </div>
+                    <div class="insert-link-dialog-field">
+                        <img src="/image/link.png">
+                        <input type="url" name="link-url" autocomplete="off" placeholder="Type or paste a link" oninput="onInsertLinkInputChange()">
+                    </div>
+                </div>
+                <div class="insert-link-dialog-footer">
+                    <button class="insert-link-button">Insert</button>
+                </div>
+            </div>
+        </dialog>
+    </dialog>
+
+    <dialog class="mail-filter-dialog">
+        <div class="mail-filter-dialog-content">
+            <div class="mail-filter-dialog-fields">
+                <label>From</label>
+                <input type="text" name="filter-from" autocomplete="off">
+            </div>
+            <div class="mail-filter-dialog-fields">
+                <label>To</label>
+                <input type="text" name="filter-to" autocomplete="off">
+            </div>
+            <div class="mail-filter-dialog-fields">
+                <label>Subject</label>
+                <input type="text" name="filter-subject" autocomplete="off">
+            </div>
+            <div class="mail-filter-dialog-fields">
+                <label>Has the words</label>
+                <input type="text" name="filter-has-the-words" autocomplete="off">
+            </div>
+            <div class="mail-filter-dialog-fields">
+                <label>Doesn't have</label>
+                <input type="text" name="filter-doesnt-have" autocomplete="off">
+            </div>
+            <div class="mail-filter-dialog-fields">
+                <label>Size</label>
+                <select name="filter-size-comparision">
+                    <option value="0">greater than</option>
+                    <option value="1">less than </option>
+                </select>
+                <input type="number" name="filter-size" min="0" autocomplete="off">
+                <select name="filter-size-unit">
+                    <option value="B">Bytes</option>
+                    <option value="KB">KB</option>
+                    <option value="MB">MB</option>
+                </select>
+            </div>
+            <div class="mail-filter-dialog-fields">
+                <label>Date within</label>
+                <select name="filter-date-comparision">
+                    <option value="0">1 day</option>
+                    <option value="1">3 days</option>
+                    <option value="2">1 week</option>
+                    <option value="3">2 weeks</option>
+                    <option value="4">1 month</option>
+                    <option value="5">2 months</option>
+                    <option value="6">6 months</option>
+                    <option value="7">1 year</option>
+                </select>
+                <input type="date" name="filter-date" autocomplete="off">
+            </div>
+            <div class="mail-filter-dialog-fields">
+                <label>Search in</label>
+                <select name="filter-search-in">
+                    <option value="0">All Mail</option>
+                    <option value="1">Inbox</option>
+                    <option value="2">Starred</option>
+                    <option value="3">Sent</option>
+                    <option value="4">Drafts</option>
+                    <option value="5">Trash</option>
+                </select>
+            </div>
+            <div class="mail-filter-dialog-fields">
+                <input type="checkbox" name="filter-has-attachment">Has attachment
+            </div>
+            <div class="mail-filter-dialog-buttons">
+                <button onclick="closeMailFilterDialog()">Cancel</button>
+                <button onclick="">Filter</button>
+            </div>
+        </div>
+    </dialog>
+</body>
+</html>
