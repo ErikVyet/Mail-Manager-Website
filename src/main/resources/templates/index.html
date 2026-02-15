@@ -97,90 +97,115 @@
             </ul>
         </nav>
         <main>
-            <div class="mail-list-control">
-                <div class="mail-control">
-                    <div>
-                        <input type="checkbox" class="select-all-checkbox" title="Select All" onchange="onSelectAllCheckboxChange(this.checked)">
-                        <select name="bulk-action" class="bulk-action-select" onchange="performBulkAction(this.value)">
-                            <option value="0">All</option>
-                            <option value="1">None</option>
-                            <option value="2">Read</option>
-                            <option value="3">Unread</option>
-                            <option value="4">Starred</option>
-                            <option value="5">Unstarred</option>
-                        </select>
+            <div class="mail-list">
+                <div class="mail-list-control">
+                    <div class="mail-control">
+                        <div>
+                            <input type="checkbox" class="select-all-checkbox" title="Select All" onchange="onSelectAllCheckboxChange(this.checked)">
+                            <select name="bulk-action" class="bulk-action-select" onchange="performBulkAction(this.value)">
+                                <option value="0">All</option>
+                                <option value="1">None</option>
+                                <option value="2">Read</option>
+                                <option value="3">Unread</option>
+                                <option value="4">Starred</option>
+                                <option value="5">Unstarred</option>
+                            </select>
+                        </div>
+                        <div class="mail-refresh-control">
+                            <button class="mail-refresh-button" title="Refresh" onclick="">
+                                <img src="/image/refresh.png">
+                            </button>
+                        </div>
+                        <div class="mail-other-control">
+                            <button class="mail-delete-button" title="Delete" onclick="">
+                                <img src="/image/trash.png">
+                            </button>
+                            <button class="mail-mark-read-button" title="Mark as read" onclick="">
+                                <img src="/image/mark-as-read.png">
+                            </button>
+                            <button class="mail-move-to-button" title="Move to" onclick="openMoveToDialog()">
+                                <img src="/image/move-to.png">
+                            </button>
+                        </div>
                     </div>
-                    <div class="mail-refresh-control">
-                        <button class="mail-refresh-button" title="Refresh" onclick="">
-                            <img src="/image/refresh.png">
+                    <div class="page-control">
+                        <button class="previous-page-button" onclick="">
+                            <img src="/image/previous.png">
                         </button>
-                    </div>
-                    <div class="mail-other-control">
-                        <button class="mail-delete-button" title="Delete" onclick="">
-                            <img src="/image/trash.png">
-                        </button>
-                        <button class="mail-mark-read-button" title="Mark as read" onclick="">
-                            <img src="/image/mark-as-read.png">
-                        </button>
-                        <button class="mail-move-to-button" title="Move to" onclick="openMoveToDialog()">
-                            <img src="/image/move-to.png">
+                        <a class="page-number" onclick="">1 of INF</a>
+                        <button class="next-page-button" onclick="">
+                            <img src="/image/next.png">
                         </button>
                     </div>
                 </div>
-                <div class="page-control">
-                    <button class="previous-page-button" onclick="">
-                        <img src="/image/previous.png">
-                    </button>
-                    <a class="page-number" onclick="">1 of INF</a>
-                    <button class="next-page-button" onclick="">
-                        <img src="/image/next.png">
-                    </button>
+                <div class="mail-container">
+                    <table class="mail-list-table">
+                        <tbody>
+                            <tr onclick="showMailDetail('1')" onmouseover="onTableRowMouseOver(this)" onmouseout="onTableRowMouseOut(this)">
+                                <td>
+                                    <input type="checkbox" name="selected-mail" class="select-checkbox" onchange="onSelectCheckboxChange(this.checked, this.parentNode.parentNode)">
+                                    <button class="starred-button" onclick="changeStarredStatus(this)">
+                                        <input type="hidden" value="false" name="starred">
+                                        <svg width="1.4vw" viewBox="0 0 200 200">
+                                            <polygon points="100,10 120,75 190,75 135,115 155,180 100,140 45,180 65,115 10,75 80,75" class="unstarred-icon" />
+                                        </svg>
+                                    </button>
+                                    <input type="hidden" value="true" name="read">
+                                    <input type="hidden" value="false" name="draft">
+                                    <input type="hidden" value="1" name="id">
+                                </td>
+                                <td>GitHub</td>
+                                <td>Fuck you</td>
+                                <td>01/01/2004</td>
+                            </tr>
+                            <tr onclick="showMailDetail('2')" onmouseover="onTableRowMouseOver(this)" onmouseout="onTableRowMouseOut(this)" class="unread-mail">
+                                <td>
+                                    <input type="checkbox" name="selected-mail" class="select-checkbox" onchange="onSelectCheckboxChange(this.checked, this.parentNode.parentNode)">
+                                    <button class="starred-button" onclick="changeStarredStatus(this)">
+                                        <input type="hidden" value="true" name="starred">
+                                        <svg width="1.4vw" viewBox="0 0 200 200">
+                                            <polygon points="100,10 120,75 190,75 135,115 155,180 100,140 45,180 65,115 10,75 80,75" class="starred-icon" />
+                                        </svg>
+                                    </button>
+                                    <input type="hidden" value="false" name="read">
+                                    <input type="hidden" value="false" name="draft">
+                                    <input type="hidden" value="2" name="id">
+                                </td>
+                                <td>Facebook</td>
+                                <td>Send jesus</td>
+                                <td>03/03/2004</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4">123</td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
-            <div class="mail-container">
-                <table class="mail-list-table">
-                    <tbody>
-                        <tr onclick="" onmouseover="onTableRowMouseOver(this)" onmouseout="onTableRowMouseOut(this)">
-                            <td>
-                                <input type="checkbox" name="selected-mail" class="select-checkbox" onchange="onSelectCheckboxChange(this.checked, this.parentNode.parentNode)">
-                                <button class="starred-button" onclick="changeStarredStatus(this)">
-                                    <input type="hidden" value="false" name="starred">
-                                    <svg width="1.4vw" viewBox="0 0 200 200">
-                                        <polygon points="100,10 120,75 190,75 135,115 155,180 100,140 45,180 65,115 10,75 80,75" class="unstarred-icon" />
-                                    </svg>
-                                </button>
-                                <input type="hidden" value="true" name="read">
-                                <input type="hidden" value="false" name="draft">
-                                <input type="hidden" value="1" name="id">
-                            </td>
-                            <td>GitHub</td>
-                            <td>Fuck you</td>
-                            <td>01/01/2004</td>
-                        </tr>
-                        <tr onclick="" onmouseover="onTableRowMouseOver(this)" onmouseout="onTableRowMouseOut(this)" class="unread-mail">
-                            <td>
-                                <input type="checkbox" name="selected-mail" class="select-checkbox" onchange="onSelectCheckboxChange(this.checked, this.parentNode.parentNode)">
-                                <button class="starred-button" onclick="changeStarredStatus(this)">
-                                    <input type="hidden" value="true" name="starred">
-                                    <svg width="1.4vw" viewBox="0 0 200 200">
-                                        <polygon points="100,10 120,75 190,75 135,115 155,180 100,140 45,180 65,115 10,75 80,75" class="starred-icon" />
-                                    </svg>
-                                </button>
-                                <input type="hidden" value="false" name="read">
-                                <input type="hidden" value="false" name="draft">
-                                <input type="hidden" value="2" name="id">
-                            </td>
-                            <td>Facebook</td>
-                            <td>Send jesus</td>
-                            <td>03/03/2004</td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="4">123</td>
-                        </tr>
-                    </tfoot>
-                </table>
+            <div class="mail-content">
+                <div class="mail-content-control">
+                    <button onclick="showMailList()" title="Back"></button>
+                </div>
+                <div class="mail-content-detail">
+                    <h2 class="mail-content-detail-title">[GitHub]</h2>
+                    <div class="mail-content-detail-header">
+                        <div>
+                            <img src="/image/user.png">
+                            <b>GitHub</b>
+                            <span>noreply@github.com</span>
+                        </div>
+                        <span>01/01/2004</span>
+                    </div>
+                    <div class="mail-content-detail-body">
+                        ABC
+                    </div>
+                    <div class="mail-content-detail-footer">
+                        <div class="mail-content-detail-attached-file"><input type="file" hidden></div>
+                        <div class="mail-content-detail-attached-image"><input type="image" hidden></div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>

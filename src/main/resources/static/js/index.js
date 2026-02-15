@@ -101,6 +101,7 @@ function navItemActive(index) {
     pageTitle.innerText = currentNavLabel.innerText;
 
     expandNav(document.getElementsByClassName('menu-button')[0]);
+    showMailList();
 }
 
 function openCreateNewLabelDialog() {
@@ -625,4 +626,18 @@ function closeMailFilterDialog() {
     dialog.close();
     button.removeAttribute('hidden');
     clearMailFilterFields();
+}
+
+function showMailDetail(mailId) {
+    const mailListContainer = document.getElementsByClassName('mail-list')[0];
+    const mailDetailContainer = document.getElementsByClassName('mail-content')[0];
+    mailListContainer.style.display = 'none';
+    mailDetailContainer.style.display = 'block';
+}
+
+function showMailList() {
+    const mailListContainer = document.getElementsByClassName('mail-list')[0];
+    const mailDetailContainer = document.getElementsByClassName('mail-content')[0];
+    mailListContainer.style.display = 'block';
+    mailDetailContainer.style.display = 'none';
 }

@@ -59,7 +59,31 @@
             </div>
         </form>
         <form class="recovery-container" enctype="multipart/form-data">
+            <h2>Recovery</h2>
+            <fieldset class="input-fields">
+                <legend>Vmail</legend>
+                <input type="email" name="vmail" placeholder="Type your Vmail" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)">
+            </fieldset>
+            <div class="verification-code">
+                <fieldset class="input-fields">
+                    <legend>Verification Code</legend>
+                    <input type="text" name="verification-code" placeholder="Type your verification code" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)">
+                </fieldset>
+                <button type="button" onclick="">Get Code</button>
+            </div>
+            <fieldset class="input-fields">
+                <legend>Password</legend>
+                <input type="password" name="password" placeholder="Type your password" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)">
+            </fieldset>
+            <fieldset class="input-fields">
+                <legend>Confirm Password</legend>
+                <input type="password" name="confirm-password" placeholder="Confirm your password" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)">
+            </fieldset>
+            <p class="error-message">Error</p>
             <button type="button" onclick="">Reset Password</button>
+            <div class="login">
+                <p>Remembered your password? <a onclick="showLogin(this.parentElement.parentElement.parentElement)">Login</a></p>
+            </div>
         </form>
     </main>
 </body>
