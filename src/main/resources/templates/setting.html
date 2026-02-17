@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/setting.css">
+    <script src="/js/setting.js"></script>
+    <title>Setting</title>
+</head>
+<body>
+    <main>
+        <div class="navbar">
+            <div class="control-container">
+                <button onclick="" title="Back"></button>
+            </div>
+            <div class="search-container">
+                <fieldset>
+                    <img src="/image/search.png">
+                    <input type="text" placeholder="Search settings" name="search" autocomplete="off" onfocus="searchFocus(this)" onblur="searchBlur(this)" oninput="searchInput(this)">
+                </fieldset>
+            </div>
+            <div class="setting-container">
+                <ul>
+                    <li onclick="activeNavItem(this, 0)"><img src="/image/profile.png">Profiles</li>
+                    <li onclick="activeNavItem(this, 1)"><img src="/image/appearance.png">Appearance</li>
+                    <li onclick="activeNavItem(this, 2)"><img src="/image/language.png">Language</li>
+                    <li onclick="activeNavItem(this, 3)"><img src="/image/about.png">About</li>
+                    <li onclick="activeNavItem(this, 4)"><img src="/image/help.png">Help</li>
+                    <li onclick=""><img src="/image/logout.png">Logout</li>
+                </ul>
+            </div>
+        </div>
+        <div class="content-panel">
+            <div class="profile-panel">
+                <div class="profile-header">
+                    <img src="/image/profile.png">
+                    <span>GitHub</span>
+                    <button onclick="this.querySelector('input').click()" title="Change profile picture">
+                        <input type="file" accept="image/*" onchange="" hidden>
+                    </button>
+                </div>
+                <div class="profile-content">
+                    <fieldset>
+                        <legend>Fullname</legend>
+                        <input type="text" value="Hoàng Quốc Việt" name="fullname" autocomplete="off" onfocus="searchFocus(this)" onblur="searchBlur(this)" readonly>
+                        <button onclick="openProfileEditingDialog(this.parentElement)" title="Edit"></button>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Birth</legend>
+                        <input type="date" value="2006-02-17" name="birth" autocomplete="off" onfocus="searchFocus(this)" onblur="searchBlur(this)" readonly>
+                        <button onclick="openProfileEditingDialog(this.parentElement)" title="Edit"></button>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Username</legend>
+                        <input type="text" value="Erik" name="username" autocomplete="off" onfocus="searchFocus(this)" onblur="searchBlur(this)" readonly>
+                        <button onclick="openProfileEditingDialog(this.parentElement)" title="Edit"></button>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Vmail</legend>
+                        <input type="email" value="hoangquocviet@vmail.com" name="vmail" autocomplete="off" onfocus="searchFocus(this)" onblur="searchBlur(this)" readonly>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Phone</legend>
+                        <input type="tel" value="0123456789" name="phone" autocomplete="off" onfocus="searchFocus(this)" onblur="searchBlur(this)" readonly>
+                        <button onclick="openProfileEditingDialog(this.parentElement)" title="Edit"></button>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Created</legend>
+                        <input type="datetime-local" value="2026-02-17T03:53:07" name="created" autocomplete="off" onfocus="searchFocus(this)" onblur="searchBlur(this)" readonly>
+                    </fieldset>
+                </div>
+                <div class="profile-footer">
+                    <button onclick="openProfilePasswordEditingDialog()">Change password</button>
+                    <button onclick="">Delete account</button>
+                </div>
+            </div>
+
+            <div class="appearance-panel">
+                <h2>Appearance</h2>
+                <fieldset>
+                    <select onfocus="searchFocus(this)" onblur="searchBlur(this)" oninput="onAppearanceChange()">
+                        <option value="light">Light</option>
+                        <option value="dark" selected>Dark</option>
+                    </select>
+                </fieldset>
+                <div>
+                    <button onclick="" id="apply-appearance-button" disabled>Apply</button>
+                </div>
+            </div>
+
+            <div class="language-panel">
+                <h2>Language</h2>
+                <fieldset>
+                    <select onfocus="searchFocus(this)" onblur="searchBlur(this)" oninput="onLanguageChange()">
+                        <option value="en" selected>English</option>
+                        <option value="vi">Tiếng Việt</option>
+                    </select>
+                </fieldset>
+                <div>
+                    <button onclick="" id="apply-language-button" disabled>Apply</button>
+                </div>
+            </div>
+            <div class="about-panel">
+                <h2>About</h2>
+                <fieldset>
+                    <legend>Version</legend>
+                    <input type="text" value="1.0.0" name="version" autocomplete="off" readonly>
+                </fieldset>
+                <fieldset>
+                    <legend>Build</legend>
+                    <input type="text" value="1" name="build" autocomplete="off" readonly>
+                </fieldset>
+                <fieldset>
+                    <legend>Release date</legend>
+                    <input type="datetime-local" value="2026-02-17T03:53:07" name="release-date" autocomplete="off" readonly>
+                </fieldset>
+                <fieldset>
+                    <legend>Developer</legend>
+                    <input type="text" value="Erik" name="developer" autocomplete="off" readonly>
+                </fieldset>
+                <fieldset>
+                    <legend>License</legend>
+                    <input type="text" value="MIT" name="license" autocomplete="off" readonly>
+                </fieldset>
+                <fieldset>
+                    <legend>Source code</legend>
+                    <input type="url" value="https://github.com/ErikVyet/Mail-Manager-Website.git" name="source-code" autocomplete="off" readonly>
+                </fieldset>
+                <fieldset>
+                    <legend>Description</legend>
+                    <textarea name="description" id="description" autocomplete="off" readonly>VMail is a web application project made by a single person that allows users to manage their emails in a simple and efficient way.</textarea>
+                </fieldset>
+            </div>
+
+            <div class="help-panel"></div>
+        </div>
+    </main>
+
+    <dialog class="profile-editing-dialog">
+        <div class="profile-editing-dialog-content">
+            <h3>Edit your information</h3>
+            <div>
+                <input type="text" value="ABC" name="edit-input" autocomplete="off" onfocus="searchFocus(this)" onblur="searchBlur(this)">
+            </div>
+            <div>
+                <button onclick="closeProfileEditingDialog()">Cancel</button>
+                <button onclick="saveProfileEditingDialog()">Save</button>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog class="profile-password-editing-dialog">
+        <div class="profile-password-editing-dialog-content">
+            <h3>Edit your password</h3>
+            <fieldset>
+                <legend>Phone</legend>
+                <input type="tel" name="phone" autocomplete="off" onfocus="searchFocus(this)" onblur="searchBlur(this)" readonly>
+            </fieldset>
+            <fieldset>
+                <legend>Verification code</legend>
+                <input type="text" maxlength="6" placeholder="Enter verification code" name="verification-code" autocomplete="off" onfocus="searchFocus(this)" onblur="searchBlur(this)">
+                <button onclick="">Get code</button>
+            </fieldset>
+            <fieldset>
+                <legend>New password</legend>
+                <input type="password" maxlength="20" placeholder="Enter new password" name="new-password" autocomplete="off" onfocus="searchFocus(this)" onblur="searchBlur(this)">
+            </fieldset>
+            <fieldset>
+                <legend>Confirm password</legend>
+                <input type="password" maxlength="20" placeholder="Confirm new password" name="confirm-password" autocomplete="off" onfocus="searchFocus(this)" onblur="searchBlur(this)">
+            </fieldset>
+            <div>
+                <button onclick="closeProfilePasswordEditingDialog()">Cancel</button>
+                <button onclick="saveProfilePasswordEditingDialog()">Save</button>
+            </div>
+        </div>
+    </dialog>
+</body>
+</html>

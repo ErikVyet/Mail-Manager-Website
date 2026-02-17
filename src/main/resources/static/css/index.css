@@ -42,7 +42,7 @@ header {
     }
 
     &>img {
-        width: 1.8vw;
+        width: 1.5vw;
         filter: invert(100%);
     }
 }
@@ -132,7 +132,7 @@ header {
     }
 }
 
-.profile {
+.setting {
     flex: 0 0 20vw;
     height: 100%;
     align-content: center;
@@ -145,9 +145,8 @@ header {
         border: none;
         border-radius: 100vw;
         background: none;
-        margin-right: 0 0.5vw;
+        margin-right: 0.5vw;
         transition: background-color 0.15s;
-
         &:hover {
             background-color: rgba(220, 220, 220, 0.1);
             transition: background-color 0.15s;
@@ -155,9 +154,7 @@ header {
     }
 }
 
-.help-button>img,
-.mode-button>img,
-.profile-button>img {
+.setting-button>img {
     width: 1.8vw;
     filter: invert(100%);
 }
