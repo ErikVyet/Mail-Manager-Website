@@ -30,13 +30,13 @@ public class User implements Serializable {
     @Column(name = "vmail", nullable = false, columnDefinition = "varchar(255)", unique = true)
     private String vmail;
 
-    @Column(name = "phone", nullable = true, columnDefinition = "char(10)", unique = true)
+    @Column(name = "phone", nullable = false, columnDefinition = "char(10)", unique = true)
     private String phone;
 
     @Column(name = "username", nullable = false, columnDefinition = "varchar(50)", unique = true)
     private String username;
 
-    @Column(name = "password", nullable = false, columnDefinition = "varchar(20)")
+    @Column(name = "password", nullable = false, columnDefinition = "varchar(64)")
     private String password;
 
     @Column(name = "fullname", nullable = false, columnDefinition = "varchar(100)")

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/register.css">
+    <script type="text/javascript" src="/js/register.js"></script>
+    <title>Register</title>
+</head>
+<body>
+    <main>
+        <form class="register-container" method="post" th:action="@{/registerSubmit}" th:object="${userRegisterRequest}">
+            <h2>Register</h2>
+
+            <fieldset class="input-fields">
+                <legend>Fullname</legend>
+                <input type="text" th:field="*{fullname}" minlength="3" maxlength="100" placeholder="Type your full name" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)">
+            </fieldset>
+            <div class="message-fields">
+                <p class="error-message" th:if="${#fields.hasErrors('fullname')}" th:errors="*{fullname}"></p>
+            </div>
+
+            <fieldset class="input-fields">
+                <legend>Username</legend>
+                <input type="text" th:field="*{username}" minlength="1" maxlength="50" placeholder="Type your username" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)">
+            </fieldset>
+            <div class="message-fields">
+                <p class="error-message" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+            </div>
+
+            <fieldset class="input-fields">
+                <legend>Vmail</legend>
+                <input type="email" th:field="*{vmail}" minlength="11" maxlength="255" placeholder="Type your Vmail" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)">
+            </fieldset>
+            <div class="message-fields">
+                <p class="error-message" th:if="${#fields.hasErrors('vmail')}" th:errors="*{vmail}"></p>
+            </div>
+
+            <fieldset class="input-fields">
+                <legend>Phone</legend>
+                <input type="tel" th:field="*{phone}" minlength="10" maxlength="10" placeholder="Type your phone number" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)">
+            </fieldset>
+            <div class="message-fields">
+                <p class="error-message" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></p>
+            </div>
+
+            <fieldset class="input-fields">
+                <legend>Verification code</legend>
+                <input type="text" th:field="*{code}" minlength="6" maxlength="6" placeholder="Type your verification code" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)">
+                <button type="button" onclick="">Get code</button>
+            </fieldset>
+            <div class="message-fields">
+                <p class="error-message" th:if= "${#fields.hasErrors('code')}" th:errors="*{code}"></p>
+            </div>
+
+            <fieldset class="input-fields">
+                <legend>Password</legend>
+                <input type="password" th:field="*{password}" minlength="8" maxlength="20" placeholder="Type your password" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)">
+            </fieldset>
+            <div class="message-fields">
+                <p class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+            </div>
+
+            <fieldset class="input-fields">
+                <legend>Confirm Password</legend>
+                <input type="password" th:field="*{confirmPassword}" minlength="8" maxlength="20" placeholder="Confirm your password" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)">
+            </fieldset>
+            <div class="message-fields">
+                <p class="error-message" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></p>
+            </div>
+
+            <p class="error-message" th:text="${registerError}"></p>
+
+            <button type="submit">Register</button>
+            <div class="login">
+                <p>Already have Vmail account? <a th:href= "@{/login}">Login</a></p>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

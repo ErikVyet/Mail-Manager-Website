@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/login.css">
+    <script type="text/javascript" src="/js/login.js"></script>
+</head>
+<body>
+    <main>
+        <form class="login-container" method="post" th:action="@{/loginSubmit}" th:object="${userLoginRequest}">
+            <h2>Login</h2>
+
+            <fieldset class="input-fields">
+                <legend>Vmail</legend>
+                <input type="email" th:field="*{vmail}" minlength="11" maxlength="255" placeholder="Type your Vmail" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)">
+            </fieldset>
+            <div class="message-fields">
+                <p class="error-message" th:if="${#fields.hasErrors('vmail')}" th:errors="*{vmail}"></p>
+            </div>
+
+            <fieldset class="input-fields">
+                <legend>Password</legend>
+                <input type="password" th:field="*{password}" minlength="8" maxlength="20" placeholder="Type your password" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)">
+            </fieldset>
+            <div class="message-fields">
+                <p class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+            </div>
+
+            <div class="message-fields">
+                <p class="error-message" th:text="${error}"></p>
+            </div>
+
+            <div class="link-fields">
+                <a th:href= "@{/recovery}">Forgot password?</a>
+            </div>
+            
+            <button type="submit">Login</button>
+            <div class="register">
+                <p>Don't have Vmail account yet?</p>
+                <a th:href= "@{/register}">Create one</a>
+            </div>
+            <img src="/image/brand.svg">
+        </form>
+    </main>
+</body>
+</html>

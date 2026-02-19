@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/recovery.css">
+    <script type="text/javascript" src="/js/recovery.js"></script>
+    <title>Recovery</title>
+</head>
+<body>
+    <main>
+        <form class="recovery-container" method="post" th:action="@{/recoverySubmit}">
+            <h2>Recovery</h2>
+            <fieldset class="input-fields">
+                <legend>Vmail</legend>
+                <input type="email" placeholder="Type your Vmail" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)">
+            </fieldset>
+            <div class="verification-code">
+                <fieldset class="input-fields">
+                    <legend>Verification Code</legend>
+                    <input type="text" placeholder="Type your verification code" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)">
+                </fieldset>
+                <button type="button" onclick="">Get Code</button>
+            </div>
+            <fieldset class="input-fields">
+                <legend>Password</legend>
+                <input type="password" placeholder="Type your password" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)">
+            </fieldset>
+            <fieldset class="input-fields">
+                <legend>Confirm Password</legend>
+                <input type="password" placeholder="Confirm your password" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)">
+            </fieldset>
+            <p class="error-message" th:text="${recoveryError}"></p>
+            <button type="submit">Reset Password</button>
+            <div class="login">
+                <p>Remembered your password? <a th:href= "@{/login}">Login</a></p>
+            </div>
+        </form>
+    </main>
+</body>
+</html>
