@@ -14,3 +14,19 @@ function clearRecoveryInputs() {
         inputs[i].value = "";
     }
 }
+
+async function getCode() {
+    const vmail = document.getElementById("vmail").value;
+    const response = await fetch("/code/getForRecovery", {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: vmail
+    });
+    const data = await response.json();
+    if (data.status === "error") {
+        document.getElementById("recoveryError").textContent = data.message;
+    }
+    else {
+        alert("Code: " + data.code);
+    }
+}

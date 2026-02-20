@@ -24,7 +24,7 @@ public class UserRegisterRequest implements Serializable {
 
     @NotBlank(message = "Vmail is required", groups = NotBlankValidation.class)
     @Size(min = 1, max = 255, message = "Vmail must be between 1 and 255 characters", groups = SizeValidation.class)
-    @Pattern(regexp = "^[a-zA-Z0-9]+@vmail.\\.com$", message = "Vmail must be in the correct format", groups = PatternValidation.class)
+    @Pattern(regexp = "^[a-zA-Z0-9]+@vmail\\.com$", message = "Vmail must be in the correct format", groups = PatternValidation.class)
     private String vmail;
 
     @NotBlank(message = "Phone number is required", groups = NotBlankValidation.class)

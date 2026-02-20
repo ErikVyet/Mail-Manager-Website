@@ -14,3 +14,36 @@ function clearRegisterInputs() {
         inputs[i].value = "";
     }
 }
+
+function disableGetCodeButton() {
+    const getCodeButton = document.getElementById("get-code-button");
+    getCodeButton.disabled = true;
+    setTimeout(enableGetCodeButton, 60000);
+}
+
+function enableGetCodeButton() {
+    const getCodeButton = document.getElementById("get-code-button");
+    getCodeButton.disabled = false;
+}
+
+async function getCode() {
+    const phone = document.getElementById("phone").value;
+    if (phone.length != 10) {
+        alert("Phone number must be 10 digits");
+        return;
+    }
+    if (phone.trim() == "") {
+        alert("Phone number cannot be empty");
+        return;
+    }
+
+    const response = await fetch("/code/get", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include"
+    });
+
+    const data = await response.json();
+    alert("Code: " + data.code);
+    disableGetCodeButton();
+}

@@ -64,19 +64,35 @@ main {
         }
     }
     & div[class="link-fields"] {
-        width: 90%;
+        width: 85%;
         flex: 0 0 4%;
         font-size: var(--font-size);
         text-align: right;
-        align-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        & div {
+            flex: 0 0 70%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            & input {
+                flex: 0 0 2%;
+                height: 100%;
+                border: none;
+                background: none;
+                outline: none;
+                color: white;
+                font-size: calc(var(--font-size) + 0.1vw);
+            }
+        }
         & a {
+            flex: 0 0 auto;
             color: white;
-            text-decoration: none;
             text-align: center;
             cursor: pointer;
             &:hover {
                 color: rgba(255, 255, 255, 0.8);
-                text-decoration: underline;
             }
         }
     }

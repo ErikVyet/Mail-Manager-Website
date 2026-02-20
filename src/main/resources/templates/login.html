@@ -14,7 +14,7 @@
 
             <fieldset class="input-fields">
                 <legend>Vmail</legend>
-                <input type="email" th:field="*{vmail}" minlength="11" maxlength="255" placeholder="Type your Vmail" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)">
+                <input type="email" th:field="*{vmail}" minlength="11" maxlength="255" placeholder="Type your Vmail" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)" required>
             </fieldset>
             <div class="message-fields">
                 <p class="error-message" th:if="${#fields.hasErrors('vmail')}" th:errors="*{vmail}"></p>
@@ -22,7 +22,7 @@
 
             <fieldset class="input-fields">
                 <legend>Password</legend>
-                <input type="password" th:field="*{password}" minlength="8" maxlength="20" placeholder="Type your password" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)">
+                <input type="password" th:field="*{password}" minlength="8" maxlength="20" placeholder="Type your password" autocomplete="off" onfocus="onInputFocus(this.parentElement)" onblur="onInputBlur(this.parentElement)" required>
             </fieldset>
             <div class="message-fields">
                 <p class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
@@ -33,6 +33,9 @@
             </div>
 
             <div class="link-fields">
+                <div>
+                    <input type="checkbox" th:field="*{remember}">Remember me
+                </div>
                 <a th:href= "@{/recovery}">Forgot password?</a>
             </div>
             

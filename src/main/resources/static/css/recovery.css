@@ -3,7 +3,7 @@
     --secondary-color: #020409;
     --font-size: 1vw;
     --font-family: Arial, Helvetica, sans-serif;
-    --container-top: 10%;
+    --container-top: 5%;
 }
 
 body {
@@ -32,16 +32,16 @@ main {
 .recovery-container {
     position: absolute;
     top: var(--container-top);
-    left: 35%;
-    width: 30%;
-    height: 80%;
+    left: 32.5%;
+    width: 35%;
+    height: 90%;
     background-color: var(--primary-color);
     border: solid 0.15vw white;
     border-radius: 1vw;
     align-items: center;
     display: flex;
     flex-direction: column;
-    gap: 3%;
+    gap: 2%;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
@@ -94,6 +94,10 @@ main {
             background-color: rgba(255, 255, 255, 0.8);
         }
     }
+    & div[class="message-fields"] {
+        flex: 0 0 3%;
+        width: 85%;
+    }
     & div[class="login"] {
         flex: 0 0 5%;
         width: 85%;
@@ -142,4 +146,5 @@ main {
 .error-message {
     color: red;
     font-size: var(--font-size);
+    margin: 0;
 }
