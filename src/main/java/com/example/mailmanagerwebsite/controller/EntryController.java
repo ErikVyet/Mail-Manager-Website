@@ -31,6 +31,11 @@ public class EntryController {
         this.userService = userService;
     }
 
+    @GetMapping("/")
+    public String homePage() {
+        return "home";
+    }
+
     @GetMapping("/login")
     public String loginPage(@CookieValue(required = false) String id, Model model, HttpSession session) {
         if (id != null) {
