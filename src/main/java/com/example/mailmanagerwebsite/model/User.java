@@ -67,6 +67,9 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user")
     private List<Detail> details;
 
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
+
     public User() {
         this.vmail = null;
         this.phone = null;
@@ -214,6 +217,14 @@ public class User implements Serializable {
 
     public void setDetails(List<Detail> details) {
         this.details = details;
+    }
+
+    public List<Token> getTokens() {
+        return tokens;
+    }
+
+    public void setTokens(List<Token> tokens) {
+        this.tokens = tokens;
     }
 
     @Override

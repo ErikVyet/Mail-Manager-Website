@@ -1,5 +1,8 @@
 package com.example.mailmanagerwebsite.controller;
 
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
@@ -10,10 +13,12 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.example.mailmanagerwebsite.dto.TokenDTO;
 import com.example.mailmanagerwebsite.dto.UserDTO;
 import com.example.mailmanagerwebsite.dto.UserLoginRequest;
 import com.example.mailmanagerwebsite.dto.UserRecoveryRequest;
 import com.example.mailmanagerwebsite.dto.UserRegisterRequest;
+import com.example.mailmanagerwebsite.service.TokenService;
 import com.example.mailmanagerwebsite.service.UserService;
 import com.example.mailmanagerwebsite.validation.ValidationOrder;
 
@@ -26,9 +31,11 @@ import jakarta.servlet.http.HttpSession;
 public class EntryController {
 
     private final UserService userService;
+    private final TokenService tokenService;
 
-    public EntryController(UserService userService) {
+    public EntryController(UserService userService, TokenService tokenService) {
         this.userService = userService;
+        this.tokenService = tokenService;
     }
 
     @GetMapping("/")
@@ -37,11 +44,17 @@ public class EntryController {
     }
 
     @GetMapping("/login")
-    public String loginPage(@CookieValue(required = false) String id, Model model, HttpSession session) {
-        if (id != null) {
-            Optional<UserDTO> optDTO = userService.getUserForLogin(Integer.parseInt(id));
-            session.setAttribute("user", optDTO.get());
-            return "redirect:/index";
+    public String loginPage(@CookieValue(required = false) String remember, Model model, HttpSession session) {
+        if (remember != null) {
+            Optional<TokenDTO> optToken = tokenService.getToken(remember);
+            if (optToken.isPresent()) {
+                TokenDTO tokenDTO = optToken.get();
+                if (tokenDTO.getExpiry().isAfter(LocalDateTime.now())) {
+                    Optional<UserDTO> optDTO = userService.getUserForLogin(tokenDTO.getUserId());
+                    session.setAttribute("user", optDTO.get());
+                    return "redirect:/index";
+                }
+            }
         }
         model.addAttribute("userLoginRequest", new UserLoginRequest());
         return "login";
@@ -53,30 +66,44 @@ public class EntryController {
             model.addAttribute("userLoginRequest", userLoginRequest);
             return "login";
         }
-        Optional<UserDTO> user = userService.getUserForLogin(userLoginRequest);
-        if (!user.isPresent()) {
+        Optional<UserDTO> opt = userService.getUserForLogin(userLoginRequest);
+        if (!opt.isPresent()) {
             model.addAttribute("userLoginRequest", userLoginRequest);
             model.addAttribute("error", "User not found");
             return "login";
         }
         if (userLoginRequest.isRemember()) {
-            Cookie cookie = new Cookie("id", user.get().getId() + "");
+            TokenDTO tokenDTO;
+            SecureRandom random = new SecureRandom();
+            do {
+                byte[] token = new byte[64];
+                random.nextBytes(token);
+
+                tokenDTO = new TokenDTO(
+                    Base64.getEncoder().withoutPadding().encodeToString(token),
+                    LocalDateTime.now(),
+                    LocalDateTime.now().plusDays(7),
+                    opt.get().getId()
+                );
+            } while (!tokenService.createToken(tokenDTO));
+
+            Cookie cookie = new Cookie("remember",  tokenDTO.getToken());
             cookie.setHttpOnly(true);
             cookie.setPath("/");
             cookie.setMaxAge(60 * 60 * 24 * 7);
-            cookie.setSecure(false);
+            cookie.setSecure(true);
             response.addCookie(cookie);
         }
         else {
             Cookie[] cookies = request.getCookies();
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("id")) {
+                if (cookie.getName().equals("remember")) {
                     cookie.setMaxAge(0);
                     response.addCookie(cookie);
                 }
             }
         }
-        session.setAttribute("user", user.get());
+        session.setAttribute("user", opt.get());
 
         return "redirect:/index";
     }
@@ -152,7 +179,20 @@ public class EntryController {
     }
 
     @GetMapping("/index")
-    public String index(Model model, HttpSession session) {
+    public String index(Model model, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            model.addAttribute("userLoginRequest", new UserLoginRequest());
+            return "login";
+        }
+        try {
+            UserDTO user = (UserDTO) session.getAttribute("user");
+            model.addAttribute("user", user);
+        }
+        catch(Exception exception) {
+            model.addAttribute("userLoginRequest", new UserLoginRequest());
+            return "login";
+        }
         return "index";
     }
 
