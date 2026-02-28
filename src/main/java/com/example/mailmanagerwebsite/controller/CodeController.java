@@ -21,7 +21,7 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/code")
 public class CodeController {
 
-    private final UserService userService;
+    protected final UserService userService;
 
     public CodeController(UserService userService) {
         this.userService = userService;

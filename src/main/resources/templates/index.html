@@ -37,34 +37,38 @@
             </button>
             <ul>
                 <li>
-                    <button onclick="navItemActive(0)" onmouseover="navItemHover(0)" onmouseout="navItemOut(0)" title="Inbox">
+                    <button th:onclick="'navItemActive(0, ' + ${systemFolders[0].id} + ')'" onmouseover="navItemHover(0)" onmouseout="navItemOut(0)" title="Inbox">
                         <img src="/image/inbox.png">
                     </button>
+                    <input type="hidden" th:value="${systemFolders[0].id}" id="inbox">
                 </li>
                 <li>
-                    <button onclick="navItemActive(1)" onmouseover="navItemHover(1)" onmouseout="navItemOut(1)" title="Starred">
+                    <button onclick="navItemActive(1, -1)" onmouseover="navItemHover(1)" onmouseout="navItemOut(1)" title="Starred">
                         <img src="/image/starred.png">
                     </button>
                 </li>
                 <li>
-                    <button onclick="navItemActive(2)" onmouseover="navItemHover(2)" onmouseout="navItemOut(2)" title="Sent">
+                    <button th:onclick="'navItemActive(2, ' + ${systemFolders[1].id} + ')'" onmouseover="navItemHover(2)" onmouseout="navItemOut(2)" title="Sent">
                         <img src="/image/sent.png">
                     </button>
+                    <input type="hidden" th:value="${systemFolders[1].id}">
                 </li>
                 <li>
-                    <button onclick="navItemActive(3)" onmouseover="navItemHover(3)" onmouseout="navItemOut(3)" title="Drafts">
+                    <button th:onclick="'navItemActive(3, ' + ${systemFolders[2].id} + ')'" onmouseover="navItemHover(3)" onmouseout="navItemOut(3)" title="Drafts">
                         <img src="/image/draft.png">
                     </button>
+                    <input type="hidden" th:value="${systemFolders[2].id}">
                 </li>
                 <li>
-                    <button onclick="navItemActive(4)" onmouseover="navItemHover(4)" onmouseout="navItemOut(4)" title="All Mail">
+                    <button onclick="navItemActive(4, -2)" onmouseover="navItemHover(4)" onmouseout="navItemOut(4)" title="All Mail">
                         <img src="/image/all-mail.png">
                     </button>
                 </li>
                 <li>
-                    <button onclick="navItemActive(5)" onmouseover="navItemHover(5)" onmouseout="navItemOut(5)" title="Trash">
+                    <button th:onclick="'navItemActive(5, ' + ${systemFolders[3].id} + ')'" onmouseover="navItemHover(5)" onmouseout="navItemOut(5)" title="Trash">
                         <img src="/image/trash.png">
                     </button>
+                    <input type="hidden" th:value="${systemFolders[3].id}">
                 </li>
                 <li>
                     <button onclick="openRemoveExistedLabelDialog()" onmouseover="navItemHover(6)" onmouseout="navItemOut(6)" title="Remove Existed Label">
@@ -72,22 +76,32 @@
                     </button>
                 </li>
                 <li style="margin-bottom: 1vw;">
-                    <button onclick="" onmouseover="navItemHover(7)" onmouseout="navItemOut(7)" title="Create New Label">
+                    <button onclick="openCreateNewLabelDialog()" onmouseover="navItemHover(7)" onmouseout="navItemOut(7)" title="Create New Label">
                         <img src="/image/create.png">
                     </button>
+                </li>
+                <li th:each="customFolder, stat : ${customFolders}" th:onmouseover="'navItemHover(' + (8 + ${stat.index}) + ')'" th:onmouseout="'navItemOut(' + (8 + ${stat.index}) + ')'">
+                    <button th:onclick="'navItemActive(' + (8 + ${stat.index}) + ', ' + ${customFolder.id} + ')'" th:title="${customFolder.name}">
+                        <img src="/image/label.png">
+                    </button>
+                    <input type="hidden" th:value="${customFolder.id}">
                 </li>
             </ul>
         </nav>
         <nav class="nav-label">
             <ul>
-                <li onclick="navItemActive(0)" onmouseover="navItemHover(0)" onmouseout="navItemOut(0)">Inbox</li>
-                <li onclick="navItemActive(1)" onmouseover="navItemHover(1)" onmouseout="navItemOut(1)">Starred</li>
-                <li onclick="navItemActive(2)" onmouseover="navItemHover(2)" onmouseout="navItemOut(2)">Sent</li>
-                <li onclick="navItemActive(3)" onmouseover="navItemHover(3)" onmouseout="navItemOut(3)">Drafts</li>
-                <li onclick="navItemActive(4)" onmouseover="navItemHover(4)" onmouseout="navItemOut(4)">All Mail</li>
-                <li onclick="navItemActive(5)" onmouseover="navItemHover(5)" onmouseout="navItemOut(5)">Trash</li>
+                <li th:onclick="'navItemActive(0, ' + ${systemFolders[0].id} + ')'" onmouseover="navItemHover(0)" onmouseout="navItemOut(0)">Inbox</li>
+                <li onclick="navItemActive(1, -1)" onmouseover="navItemHover(1)" onmouseout="navItemOut(1)">Starred</li>
+                <li th:onclick="'navItemActive(2, ' + ${systemFolders[1].id} + ')'" onmouseover="navItemHover(2)" onmouseout="navItemOut(2)">Sent</li>
+                <li th:onclick="'navItemActive(3, ' + ${systemFolders[2].id} + ')'" onmouseover="navItemHover(3)" onmouseout="navItemOut(3)">Drafts</li>
+                <li onclick="navItemActive(4, -2)" onmouseover="navItemHover(4)" onmouseout="navItemOut(4)">All Mail</li>
+                <li th:onclick="'navItemActive(5, ' + ${systemFolders[3].id} + ')'" onmouseover="navItemHover(5)" onmouseout="navItemOut(5)">Trash</li>
                 <li onclick="openRemoveExistedLabelDialog()" onmouseover="navItemHover(6)" onmouseout="navItemOut(6)">Remove Existed Label</li>
                 <li onclick="openCreateNewLabelDialog()" onmouseover="navItemHover(7)" onmouseout="navItemOut(7)" style="margin-bottom: 1vw;">Create New Label</li>
+                <li th:each="customFolder, stat : ${customFolders}" th:onclick="'navItemActive(' + (8 + ${stat.index}) + ', ' + ${customFolder.id} + ')'" th:onmouseover="'navItemHover(' + (8 + ${stat.index}) + ')'" th:onmouseout="'navItemOut(' + (8 + ${stat.index}) + ')'">
+                    <span th:text="${customFolder.name}"></span>
+                    <input type="hidden" th:value="${customFolder.id}">
+                </li>
             </ul>
         </nav>
         <main>
@@ -135,24 +149,23 @@
                 <div class="mail-container">
                     <table class="mail-list-table">
                         <tbody>
-                            <tr onclick="showMailDetail('1')" onmouseover="onTableRowMouseOver(this)" onmouseout="onTableRowMouseOut(this)">
+                            <tr th:each="detail : ${details}" th:class="${detail.seen ? '' : 'unread-mail'}" onmouseover="onTableRowMouseOver(this)" onmouseout="onTableRowMouseOut(this)">
                                 <td>
                                     <input type="checkbox" name="selected-mail" class="select-checkbox" onchange="onSelectCheckboxChange(this.checked, this.parentNode.parentNode)">
                                     <button class="starred-button" onclick="changeStarredStatus(this)">
-                                        <input type="hidden" value="false" name="starred">
+                                        <input type="hidden" th:value="${detail.starred}" name="starred">
                                         <svg width="1.4vw" viewBox="0 0 200 200">
-                                            <polygon points="100,10 120,75 190,75 135,115 155,180 100,140 45,180 65,115 10,75 80,75" class="unstarred-icon" />
+                                            <polygon points="100,10 120,75 190,75 135,115 155,180 100,140 45,180 65,115 10,75 80,75" th:class="${detail.starred ? 'starred-icon' : 'unstarred-icon'}"/>
                                         </svg>
                                     </button>
-                                    <input type="hidden" value="true" name="read">
-                                    <input type="hidden" value="false" name="draft">
-                                    <input type="hidden" value="1" name="id">
+                                    <input type="hidden" th:value="${detail.seen}" name="seen">
+                                    <input type="hidden" th:value="${detail.id}" name="id">
                                 </td>
-                                <td>GitHub</td>
-                                <td>Fuck you</td>
-                                <td>01/01/2004</td>
+                                <td th:onclick="'showMailDetail(' + ${detail.email.id} + ')'" th:text="${detail.email.sender}"></td>
+                                <td th:onclick="'showMailDetail(' + ${detail.email.id} + ')'" th:text="${detail.email.body}"></td>
+                                <td th:onclick="'showMailDetail(' + ${detail.email.id} + ')'" th:text="${#temporals.format(detail.received, 'dd/MM/yyyy')}"></td>
                             </tr>
-                            <tr onclick="showMailDetail('2')" onmouseover="onTableRowMouseOver(this)" onmouseout="onTableRowMouseOut(this)" class="unread-mail">
+                            <!-- <tr onclick="showMailDetail('2')" onmouseover="onTableRowMouseOver(this)" onmouseout="onTableRowMouseOut(this)" class="unread-mail">
                                 <td>
                                     <input type="checkbox" name="selected-mail" class="select-checkbox" onchange="onSelectCheckboxChange(this.checked, this.parentNode.parentNode)">
                                     <button class="starred-button" onclick="changeStarredStatus(this)">
@@ -168,7 +181,7 @@
                                 <td>Facebook</td>
                                 <td>Send jesus</td>
                                 <td>03/03/2004</td>
-                            </tr>
+                            </tr> -->
                         </tbody>
                         <tfoot>
                             <tr>
@@ -238,8 +251,7 @@
         </div>
         <div>
             <ul>
-                <li>123</li>
-                <li onclick="">Trash</li>
+                <li th:each="customFolder : ${customFolders}" th:text="${customFolder.name}" th:onclick=""></li>
                 <hr/>
                 <li onclick="">Create New Label</li>
             </ul>

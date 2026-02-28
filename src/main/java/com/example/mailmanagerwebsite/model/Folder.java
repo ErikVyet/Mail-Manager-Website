@@ -25,7 +25,7 @@ public class Folder implements Serializable {
     @Column(name = "id", nullable = false, columnDefinition = "integer")
     private int id;
 
-    @Column(name = "name", nullable = false, columnDefinition = "varchar(20)", unique = true)
+    @Column(name = "name", nullable = false, columnDefinition = "varchar(20)")
     private String name;
 
     @Column(name = "system", nullable = false, columnDefinition = "boolean")

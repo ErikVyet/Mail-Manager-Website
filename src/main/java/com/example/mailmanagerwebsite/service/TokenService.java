@@ -15,8 +15,8 @@ import com.example.mailmanagerwebsite.repository.UserRepository;
 @Service
 public class TokenService {
 
-    private final TokenRepository tokenRepository;
-    private final UserRepository userRepository;
+    protected final TokenRepository tokenRepository;
+    protected final UserRepository userRepository;
 
     public TokenService(TokenRepository tokenRepository, UserRepository userRepository) {
         this.tokenRepository = tokenRepository;
@@ -25,32 +25,79 @@ public class TokenService {
 
     @Transactional(readOnly = true)
     public Optional<TokenDTO> getToken(String value) {
-        Optional<Token> opt = tokenRepository.findByValue(DigestUtils.sha256Hex(value));
-        if (opt.isPresent()) {
-            Token token = opt.get();
-            TokenDTO tokenDTO = new TokenDTO(
-                token.getValue(),
-                token.getCreated(),
-                token.getExpiry(),
-                token.getUser().getId()
-            );
-            return Optional.of(tokenDTO);
+        if (value != null) {
+            Optional<Token> opt = tokenRepository.findByValue(DigestUtils.sha256Hex(value));
+            if (opt.isPresent()) {
+                Token token = opt.get();
+                return Optional.of(new TokenDTO(
+                    token.getId(),
+                    token.getName(),
+                    token.getValue(),
+                    token.getCreated(),
+                    token.getExpiry(),
+                    token.getUser().getId()
+                ));
+            }
+        }
+        return Optional.empty();
+    }
+
+    public Optional<TokenDTO> getToken(String name, int userId) {
+        if (name != null) {
+            Optional<Token> opt = this.tokenRepository.findByNameAndUserId(name, userId);
+            if (opt.isPresent()) {
+                Token token = opt.get();
+                return Optional.of(new TokenDTO(
+                    token.getId(),
+                    token.getName(),
+                    token.getValue(),
+                    token.getCreated(),
+                    token.getExpiry(),
+                    token.getUser().getId()
+                ));
+            }
         }
         return Optional.empty();
     }
 
     @Transactional
-    public boolean createToken(TokenDTO tokenDTO) {
+    public boolean createToken(TokenDTO tokenDTO, boolean secured) {
+        System.out.println(secured);
+        System.out.println(tokenDTO.getToken());
         Token token = new Token(
-            DigestUtils.sha256Hex(tokenDTO.getToken()),
+            tokenDTO.getName(),
+            secured ? DigestUtils.sha256Hex(tokenDTO.getToken()) : tokenDTO.getToken(),
             tokenDTO.getCreated(),
             tokenDTO.getExpiry()
         );
         Optional<User> user = userRepository.findById(tokenDTO.getUserId());
         if (user.isPresent()) {
             token.setUser(user.get());
-            tokenRepository.save(token);
-            return true;
+            try {
+                this.tokenRepository.save(token);
+                return true;
+            }
+            catch (Exception exception) {
+                System.out.println(exception.getMessage());
+            }
+        }
+        return false;
+    }
+
+    @Transactional
+    public boolean updateToken(TokenDTO tokenDTO, boolean secured) {
+        Optional<Token> opt = this.tokenRepository.findById(tokenDTO.getId());
+        if (opt.isPresent()) {
+            Token token = opt.get();
+            token.setValue(secured ? DigestUtils.sha256Hex(tokenDTO.getToken()) : tokenDTO.getToken());
+            token.setExpiry(tokenDTO.getExpiry());
+            try {
+                this.tokenRepository.save(token);
+                return true;
+            }
+            catch (Exception exception) {
+                System.out.println(exception.getMessage());
+            }
         }
         return false;
     }

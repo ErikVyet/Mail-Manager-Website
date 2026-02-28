@@ -3,6 +3,7 @@ package com.example.mailmanagerwebsite.controller;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
@@ -13,11 +14,15 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.example.mailmanagerwebsite.dto.DetailDTO;
+import com.example.mailmanagerwebsite.dto.FolderDTO;
 import com.example.mailmanagerwebsite.dto.TokenDTO;
 import com.example.mailmanagerwebsite.dto.UserDTO;
 import com.example.mailmanagerwebsite.dto.UserLoginRequest;
 import com.example.mailmanagerwebsite.dto.UserRecoveryRequest;
 import com.example.mailmanagerwebsite.dto.UserRegisterRequest;
+import com.example.mailmanagerwebsite.service.DetailService;
+import com.example.mailmanagerwebsite.service.FolderService;
 import com.example.mailmanagerwebsite.service.TokenService;
 import com.example.mailmanagerwebsite.service.UserService;
 import com.example.mailmanagerwebsite.validation.ValidationOrder;
@@ -30,12 +35,16 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class EntryController {
 
-    private final UserService userService;
-    private final TokenService tokenService;
+    protected final UserService userService;
+    protected final TokenService tokenService;
+    protected final FolderService folderService;
+    protected final DetailService detailService;
 
-    public EntryController(UserService userService, TokenService tokenService) {
+    public EntryController(UserService userService, TokenService tokenService, FolderService folderService, DetailService detailService) {
         this.userService = userService;
         this.tokenService = tokenService;
+        this.folderService = folderService;
+        this.detailService = detailService;
     }
 
     @GetMapping("/")
@@ -52,6 +61,7 @@ public class EntryController {
                 if (tokenDTO.getExpiry().isAfter(LocalDateTime.now())) {
                     Optional<UserDTO> optDTO = userService.getUserForLogin(tokenDTO.getUserId());
                     session.setAttribute("user", optDTO.get());
+                    session.setMaxInactiveInterval(0);
                     return "redirect:/index";
                 }
             }
@@ -80,12 +90,13 @@ public class EntryController {
                 random.nextBytes(token);
 
                 tokenDTO = new TokenDTO(
+                    "remember",
                     Base64.getEncoder().withoutPadding().encodeToString(token),
                     LocalDateTime.now(),
                     LocalDateTime.now().plusDays(7),
                     opt.get().getId()
                 );
-            } while (!tokenService.createToken(tokenDTO));
+            } while (!tokenService.createToken(tokenDTO, true));
 
             Cookie cookie = new Cookie("remember",  tokenDTO.getToken());
             cookie.setHttpOnly(true);
@@ -104,7 +115,7 @@ public class EntryController {
             }
         }
         session.setAttribute("user", opt.get());
-
+        session.setMaxInactiveInterval(0);
         return "redirect:/index";
     }
 
@@ -179,21 +190,72 @@ public class EntryController {
     }
 
     @GetMapping("/index")
-    public String index(Model model, HttpServletRequest request) {
+    public String index(Model model, HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
-            model.addAttribute("userLoginRequest", new UserLoginRequest());
-            return "login";
+            return "redirect:/login";
         }
         try {
-            UserDTO user = (UserDTO) session.getAttribute("user");
-            model.addAttribute("user", user);
+            UserDTO userDTO = (UserDTO) session.getAttribute("user");
+            model.addAttribute("user", userDTO);
+
+            List<FolderDTO> systemFolderDTOs = this.folderService.getSystemFolders(userDTO.getId());
+            model.addAttribute("systemFolders", systemFolderDTOs);
+
+            List<FolderDTO> customFolderDTOs = this.folderService.getCustomFolders(userDTO.getId());
+            model.addAttribute("customFolders", customFolderDTOs);
+
+            String activeFolderId;
+            String activeNavIndex;
+
+            Optional<TokenDTO> optActiveFolderIdToken = this.tokenService.getToken("activeFolderId", userDTO.getId());
+            Optional<TokenDTO> optActiveNavIndexToken = this.tokenService.getToken("activeNavIndex", userDTO.getId());
+            if (optActiveFolderIdToken.isPresent() && optActiveNavIndexToken.isPresent()) {
+                TokenDTO activeFolderIdToken = optActiveFolderIdToken.get();
+                TokenDTO activeNavIndexToken = optActiveNavIndexToken.get();
+
+                activeFolderIdToken.setExpiry(LocalDateTime.now().plusDays(7));
+                activeNavIndexToken.setExpiry(LocalDateTime.now().plusDays(7));
+
+                this.tokenService.updateToken(activeFolderIdToken, false);
+                this.tokenService.updateToken(activeNavIndexToken, false);
+
+                activeFolderId = activeFolderIdToken.getToken();
+                activeNavIndex = activeNavIndexToken.getToken();
+            }
+            else {
+                TokenDTO activeFolderIdToken = new TokenDTO();
+                activeFolderIdToken.setName("activeFolderId");
+                activeFolderIdToken.setToken(systemFolderDTOs.get(0).getId() + "");
+                activeFolderIdToken.setCreated(LocalDateTime.now());
+                activeFolderIdToken.setExpiry(LocalDateTime.now().plusDays(7));
+                activeFolderIdToken.setUserId(userDTO.getId());
+
+                TokenDTO activeNavIndexToken = new TokenDTO();
+                activeNavIndexToken.setName("activeNavIndex");
+                activeNavIndexToken.setToken("0");
+                activeNavIndexToken.setCreated(LocalDateTime.now());
+                activeNavIndexToken.setExpiry(LocalDateTime.now().plusDays(7));
+                activeNavIndexToken.setUserId(userDTO.getId());
+
+                this.tokenService.createToken(activeFolderIdToken, false);
+                this.tokenService.createToken(activeNavIndexToken, false);
+
+                activeFolderId = systemFolderDTOs.get(0).getId() + "";
+                activeNavIndex = "0";
+            }
+            session.setAttribute("activeFolderId", activeFolderId);
+            session.setAttribute("activeNavIndex", activeNavIndex);
+            List<DetailDTO> detailDTOs = this.detailService.getDetailsByFolderId(userDTO.getId(), Integer.parseInt(activeFolderId));
+            model.addAttribute("details", detailDTOs);
+
+            return "index";
         }
         catch(Exception exception) {
+            System.out.println("Error: " + exception.getMessage());
             model.addAttribute("userLoginRequest", new UserLoginRequest());
             return "login";
         }
-        return "index";
     }
 
 }

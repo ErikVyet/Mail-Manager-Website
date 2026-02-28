@@ -28,9 +28,6 @@ public class Detail implements Serializable {
     @Column(name = "starred", nullable = false, columnDefinition = "boolean")
     private boolean starred;
 
-    @Column(name = "trashed", nullable = false, columnDefinition = "boolean")
-    private boolean trashed;
-
     @Column(name = "received", nullable = false, columnDefinition = "timestamp")
     private LocalDateTime received;
 
@@ -52,22 +49,19 @@ public class Detail implements Serializable {
     public Detail() {
         this.seen = false;
         this.starred = false;
-        this.trashed = false;
         this.received = null;
     }
 
-    public Detail(boolean seen, boolean starred, boolean trashed, LocalDateTime received) {
+    public Detail(boolean seen, boolean starred, LocalDateTime received) {
         this.seen = seen;
         this.starred = starred;
-        this.trashed = trashed;
         this.received = received;
     }
 
-    public Detail(DetailId id, boolean seen, boolean starred, boolean trashed, LocalDateTime received) {
+    public Detail(DetailId id, boolean seen, boolean starred, LocalDateTime received) {
         this.id = id;
         this.seen = seen;
         this.starred = starred;
-        this.trashed = trashed;
         this.received = received;
     }
 
@@ -93,14 +87,6 @@ public class Detail implements Serializable {
 
     public void setStarred(boolean starred) {
         this.starred = starred;
-    }
-
-    public boolean isTrashed() {
-        return trashed;
-    }
-
-    public void setTrashed(boolean trashed) {
-        this.trashed = trashed;
     }
 
     public LocalDateTime getReceived() {
@@ -137,7 +123,7 @@ public class Detail implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("{ id: %s, seen: %b, starred: %b, trashed: %b, received: %s }", id, seen, starred, trashed, received.toString());
+        return String.format("{ id: %s, seen: %b, starred: %b, received: %s }", id, seen, starred, received.toString());
     }
 
 }

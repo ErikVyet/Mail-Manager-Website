@@ -4,14 +4,29 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import com.example.mailmanagerwebsite.model.Folder;
+import com.example.mailmanagerwebsite.validation.NotBlankValidation;
+import com.example.mailmanagerwebsite.validation.NotNullValidation;
+import com.example.mailmanagerwebsite.validation.SizeValidation;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class FolderDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private int id;
+
+    @NotNull(message = "Folder name need to be specified", groups = NotNullValidation.class)
+    @NotBlank(message = "Folder name is required", groups = NotBlankValidation.class)
+    @Size(min = 1, max = 20, message = "Folder name must be between 1 and 20 characters", groups = SizeValidation.class)
     private String name;
+
+    @NotNull(message = "Type of folder need to be specified", groups = NotNullValidation.class)
     private boolean system;
+
+    @NotNull(message = "Created date need to be specified", groups = NotNullValidation.class)
     private LocalDateTime created;
 
     public int getId() {

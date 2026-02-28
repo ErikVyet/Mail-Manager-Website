@@ -5,16 +5,7 @@ let selectedMails = [];
 let attachedFiles = [];
 let attachedImages = [];
 
-window.onload = function() {
-    const navIcon = document.getElementsByClassName('nav-icon')[0].getElementsByTagName('ul')[0].getElementsByTagName('li')[activeNavIndex];
-    const navLabel = document.getElementsByClassName('nav-label')[0].getElementsByTagName('ul')[0].getElementsByTagName('li')[activeNavIndex];
-    navIcon.style.backgroundColor = 'rgba(220, 220, 220, 0.1)';
-    navLabel.style.backgroundColor = 'rgba(220, 220, 220, 0.1)';
-    navLabel.style.fontWeight = 'bold';
-
-    const pageTitle = document.getElementsByTagName('title')[0];
-    pageTitle.innerText = 'Inbox';
-
+window.onload = async function() {
     // Adding copy and paste functionality to draft body
     const draftBody = document.getElementsByName('draft-body')[0];
     draftBody.addEventListener("paste", (e) => {
@@ -29,8 +20,21 @@ window.onload = function() {
         }
     });
 
-    // Load labels from database into navigation bar and move-to dialog
-    
+    try {
+        const response = await fetch("/folder/active", {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
+        });
+        const data = await response.json();
+
+        const activeFolderId = data.activeFolderId != null ? Number.parseInt(data.activeFolderId) : this.document.getElementById('inbox').value;
+        activeNavIndex = data.activeNavIndex != null ? Number.parseInt(data.activeNavIndex) : 0;
+
+        navItemActive(activeNavIndex, activeFolderId);
+    } 
+    catch (error) {
+        console.log(error);
+    }
 }
 
 function expandNav(button) {
@@ -82,7 +86,7 @@ function navItemOut(index) {
     }
 }
 
-function navItemActive(index) {
+async function navItemActive(index, folderId) {
     const previousNavIcon = document.getElementsByClassName('nav-icon')[0].getElementsByTagName('ul')[0].getElementsByTagName('li')[activeNavIndex];
     const previousNavLabel = document.getElementsByClassName('nav-label')[0].getElementsByTagName('ul')[0].getElementsByTagName('li')[activeNavIndex];
     previousNavIcon.style.backgroundColor = '#020409';
@@ -99,6 +103,115 @@ function navItemActive(index) {
 
     const pageTitle = document.getElementsByTagName('title')[0];
     pageTitle.innerText = currentNavLabel.innerText;
+
+
+    var response;
+    var data;
+
+    switch (index) {
+        case 1: {
+            response = await fetch("/mail/starred", {
+                method: "GET",
+                headers: { "Content-Type" : "application/json" }
+            });
+            break;
+        }
+        case 4: {
+            response = await fetch("/mail/all", {
+                method: "GET",
+                headers: { "Content-Type" : "application/json" }
+            });
+            break;
+        }
+        default: {
+            response = await fetch("/mail/folder", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ 
+                    activeNavIndex: index,
+                    activeFolderId: folderId
+                })
+            });
+            break;
+        }
+    }
+
+    data = await response.json();
+    const table = document.getElementsByClassName('mail-list-table')[0];
+    const tbody = table.getElementsByTagName('tbody')[0];
+    tbody.innerHTML = '';
+
+    for (const [key, value] of Object.entries(data)) {
+        const tr = document.createElement('tr');
+        tr.className = value.seen ? '' : 'unread-mail';
+        tr.onclick = () => showMailDetail(Number.parseInt(key));
+        tr.onmouseover = () => onTableRowMouseOver(tr);
+        tr.onmouseout = () => onTableRowMouseOut(tr);
+
+        var td = document.createElement('td');
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.name = 'selected-mail';
+        input.className = 'select-checkbox';
+        input.onchange = () => onSelectCheckboxChange(input.checked, tr);
+        td.appendChild(input);
+
+        const button = document.createElement('button');
+        button.className = 'starred-button';
+        button.onclick = () => changeStarredStatus(button);
+
+        const starred = document.createElement('input');
+        starred.type = 'hidden';
+        starred.value = value.starred;
+        starred.name = 'starred';
+
+        const svg = document.createElement('svg');
+        svg.setAttribute('width', '1.4vw');
+        svg.setAttribute('viewBox', '0 0 200 200');
+
+        const polygon = document.createElement('polygon');
+        polygon.setAttribute('points', '100,10 120,75 190,75 135,115 155,180 100,140 45,180 65,115 10,75 80,75');
+        polygon.className = value.starred ? 'starred-icon' : 'unstarred-icon';
+
+        const seen = document.createElement('input');
+        seen.type = 'hidden';
+        seen.value = value.seen;
+        seen.name = 'seen';
+
+        const id = document.createElement('input');
+        id.type = 'hidden';
+        id.value = value.id;
+        id.name = 'id';
+
+        svg.appendChild(polygon);
+        button.appendChild(starred);
+        button.appendChild(svg);
+        td.appendChild(input);
+        td.appendChild(button);
+        td.appendChild(seen);
+        td.appendChild(id);
+        tr.appendChild(td);
+
+        td = document.createElement('td');
+        td.textContent = value.email.sender;
+        td.onclick = () => showMailDetail(Number.parseInt(key));
+        tr.appendChild(td);
+
+        td = document.createElement('td');
+        td.textContent = value.email.body;
+        td.onclick = () => showMailDetail(Number.parseInt(key));
+        tr.appendChild(td);
+
+        const date = new Date(value.received);
+        td = document.createElement('td');
+        td.textContent = date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+        td.onclick = () => showMailDetail(Number.parseInt(key));
+        tr.appendChild(td);
+
+        tbody.appendChild(tr);
+    }
 
     expandNav(document.getElementsByClassName('menu-button')[0]);
     showMailList();
@@ -128,7 +241,7 @@ function enableCreateNewLabelButton(text) {
     }
 }
 
-function createNewLabel() {
+async function createNewLabel() {
     const labelName = document.getElementsByName('new-label-name')[0].value;
     const index = document.getElementsByClassName('nav-icon')[0].getElementsByTagName('ul')[0].getElementsByTagName('li').length;
     if (index == 15) {
@@ -137,22 +250,55 @@ function createNewLabel() {
         return;
     }
 
+    const response = await fetch("/folder/create", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ 
+            name: labelName,
+            system: false,
+            created: (new Date()).toISOString()
+        })
+    });
+
+    const data = await response.json();
+    if (data.error != null) {
+        alert(data.error);
+        closeCreateNewLabelDialog();
+        return;
+    }
+    const folderId = data.folderId;
+
     const navIconImg = document.createElement('img');
-    navIconImg.src = './resource/image/label.png';
+    navIconImg.src = '/image/label.png';
     const navIconButton = document.createElement('button');
     navIconButton.title = labelName;
-    navIconButton.onclick = () => navItemActive(index);
+    navIconButton.onclick = () => navItemActive(index, folderId);
     navIconButton.onmouseover = () => navItemHover(index);
     navIconButton.onmouseout = () => navItemOut(index);
     navIconButton.appendChild(navIconImg);
+    const navIconInput = document.createElement('input');
+    navIconInput.type = 'hidden';
+    navIconInput.value = folderId;
     const navIconItem = document.createElement('li');
     navIconItem.appendChild(navIconButton);
+    navIconItem.appendChild(navIconInput);
+    navIconItem.onclick = () => navItemActive(index, folderId);
+    navIconItem.onmouseover = () => navItemHover(index);
+    navIconItem.onmouseout = () => navItemOut(index);
     const navIconList = document.getElementsByClassName('nav-icon')[0].getElementsByTagName('ul')[0];
     navIconList.appendChild(navIconItem);
 
+    const navLabelSpan = document.createElement('span');
+    navLabelSpan.innerText = labelName;
+    const navLabelInput = document.createElement('input');
+    navLabelInput.type = 'hidden';
+    navLabelInput.value = folderId;
     const navLabelItem = document.createElement('li');
-    navLabelItem.innerText = labelName;
-    navLabelItem.onclick = () => navItemActive(index);
+    navLabelItem.appendChild(navLabelSpan);
+    navLabelItem.appendChild(navLabelInput);
+    navLabelItem.onclick = () => navItemActive(index, folderId);
     navLabelItem.onmouseover = () => navItemHover(index);
     navLabelItem.onmouseout = () => navItemOut(index);
     const navLabelList = document.getElementsByClassName('nav-label')[0].getElementsByTagName('ul')[0];
@@ -175,10 +321,11 @@ function openRemoveExistedLabelDialog() {
 
     //Backend integration to get existing labels
     const navLabelList = document.getElementsByClassName('nav-label')[0].getElementsByTagName('ul')[0];
-    for (let i = 8; i < navLabelList.getElementsByTagName('li').length; i++) {
+    const navLabelListItems = navLabelList.getElementsByTagName('li');
+    for (let i = 8; i < navLabelListItems.length; i++) {
         const option = document.createElement('option');
-        option.value = navLabelList.getElementsByTagName('li')[i].innerText;
-        option.innerText = navLabelList.getElementsByTagName('li')[i].innerText;
+        option.value = navLabelListItems[i].getElementsByTagName('input')[0].value;
+        option.innerText = navLabelListItems[i].getElementsByTagName('span')[0].innerText;
         select.appendChild(option);
     }
 
@@ -205,7 +352,7 @@ function enableRemoveExistedLabelButton(value) {
     }
 }
 
-function removeExistedLabel() {
+async function removeExistedLabel() {
     const dialog = document.getElementsByClassName('remove-existed-label-dialog')[0];
     const select = dialog.getElementsByTagName('select')[0];
     const labelToRemove = select.value;
@@ -215,28 +362,48 @@ function removeExistedLabel() {
     const length = navLabelList.getElementsByTagName('li').length;
 
     var flag = false;
-    for (let i = 0; i < length; i++) {
+    for (let i = 8; i < length; i++) {
         if (flag) {
             const newIndex = i - 1;
             const navIconItem = navIconList.getElementsByTagName('li')[newIndex];
-            navIconItem.getElementsByTagName('button')[0].onclick = () => navItemActive(newIndex);
+            const folderId = navIconItem.getElementsByTagName('input')[0].value;
+
+            navIconItem.getElementsByTagName('button')[0].onclick = () => navItemActive(newIndex, folderId);
             navIconItem.getElementsByTagName('button')[0].onmouseover = () => navItemHover(newIndex);
             navIconItem.getElementsByTagName('button')[0].onmouseout = () => navItemOut(newIndex);
 
             const navLabelItem = navLabelList.getElementsByTagName('li')[newIndex];
-            navLabelItem.onclick = () => navItemActive(newIndex);
+            navLabelItem.onclick = () => navItemActive(newIndex, folderId);
             navLabelItem.onmouseover = () => navItemHover(newIndex);
             navLabelItem.onmouseout = () => navItemOut(newIndex);
         }
-        else if (navLabelList.getElementsByTagName('li')[i].innerText === labelToRemove) {
-            navIconList.removeChild(navIconList.getElementsByTagName('li')[i]);
-            navLabelList.removeChild(navLabelList.getElementsByTagName('li')[i]);
-            if (i === activeNavIndex) {
-                activeNavIndex = 0;
-                navItemActive(0);
-            }
-            else if (i < activeNavIndex) {
-                activeNavIndex -= 1;
+        else if (navLabelList.getElementsByTagName('li')[i].getElementsByTagName('input')[0].value === labelToRemove) {
+            try {
+                const response = await fetch('/folder/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: labelToRemove })
+                });
+
+                const data = await response.json();
+                if (data.error != null) {
+                    alert(data.error);
+                    return;
+                }
+
+                navIconList.removeChild(navIconList.getElementsByTagName('li')[i]);
+                navLabelList.removeChild(navLabelList.getElementsByTagName('li')[i]);
+                if (i === activeNavIndex) {
+                    activeNavIndex = 0;
+                }
+                else if (i < activeNavIndex) {
+                    activeNavIndex -= 1;
+                }
+
+                navItemActive(activeNavIndex, navIconList.getElementsByTagName('li')[0].getElementsByTagName('input')[0].value);
+            } 
+            catch (error) {
+                console.error('Error:', error);
             }
             flag = true;
         }
@@ -373,7 +540,7 @@ function performBulkAction(value) {
             break;
         }
         case "2": {
-            const inputs = document.getElementsByName('read');
+            const inputs = document.getElementsByName('seen');
             for (let i = 0; i < inputs.length; i++) {
                 const row = inputs[i].parentElement.parentElement;
                 const column = inputs[i].parentElement;
@@ -394,7 +561,7 @@ function performBulkAction(value) {
             break;
         }
         case "3": {
-            const inputs = document.getElementsByName('read');
+            const inputs = document.getElementsByName('seen');
             for (let i = 0; i < inputs.length; i++) {
                 const row = inputs[i].parentElement.parentElement;
                 const column = inputs[i].parentElement;
@@ -629,6 +796,8 @@ function closeMailFilterDialog() {
 }
 
 function showMailDetail(mailId) {
+    
+
     const mailListContainer = document.getElementsByClassName('mail-list')[0];
     const mailDetailContainer = document.getElementsByClassName('mail-content')[0];
     mailListContainer.style.display = 'none';

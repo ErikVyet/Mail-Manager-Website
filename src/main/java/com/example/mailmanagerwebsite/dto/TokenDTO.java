@@ -8,27 +8,31 @@ public class TokenDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private int id;
+    private String name;
     private String token;
     private LocalDateTime created;
     private LocalDateTime expiry;
     private int userId;
     
     public TokenDTO() {
+        this.name = null;
         this.token = null;
         this.created = null;
         this.expiry = null;
         this.userId = -1;
     }
 
-    public TokenDTO(String token, LocalDateTime created, LocalDateTime expiry, int userId) {
+    public TokenDTO(String name, String token, LocalDateTime created, LocalDateTime expiry, int userId) {
+        this.name = name;
         this.token = token;
         this.created = created;
         this.expiry = expiry;
         this.userId = userId;
     }
 
-    public TokenDTO(int id, String token, LocalDateTime created, LocalDateTime expiry, int userId) {
+    public TokenDTO(int id, String name, String token, LocalDateTime created, LocalDateTime expiry, int userId) {
         this.id = id;
+        this.name = name;
         this.token = token;
         this.created = created;
         this.expiry = expiry;
@@ -41,6 +45,14 @@ public class TokenDTO implements Serializable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getToken() {
@@ -77,7 +89,7 @@ public class TokenDTO implements Serializable {
 
     @Override
     public String toString() {
-        return "{ id:" + id + ", token:" + token + ", created:" + created + ", expiry:" + expiry + "}";
+        return "{ id:" + id + ", name:" + name + ", token:" + token + ", created:" + created + ", expiry:" + expiry + "}";
     }
 
 }

@@ -23,7 +23,10 @@ public class Token implements Serializable {
     @Column(name = "id", nullable = false, unique = true, columnDefinition = "integer")
     private int id;
 
-    @Column(name = "value", nullable = false, unique = true, columnDefinition = "char(64)")
+    @Column(name = "name", nullable = false, columnDefinition = "varchar(255)")
+    private String name;
+
+    @Column(name = "value", nullable = false, columnDefinition = "varchar(64)")
     private String value;
 
     @Column(name = "created", nullable = false, columnDefinition = "timestamp")
@@ -37,12 +40,14 @@ public class Token implements Serializable {
     private User user;
 
     public Token() {
+        this.name = null;
         this.value = null;
         this.created = null;
         this.expiry = null;
     }
 
-    public Token(String value, LocalDateTime created, LocalDateTime expiry) {
+    public Token(String name, String value, LocalDateTime created, LocalDateTime expiry) {
+        this.name = name;
         this.value = value;
         this.created = created;
         this.expiry = expiry;
@@ -54,6 +59,14 @@ public class Token implements Serializable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getValue() {
@@ -90,7 +103,7 @@ public class Token implements Serializable {
 
     @Override
     public String toString() {
-        return "{ id:" + id + ", value:" + value + ", created:" + created + ", expiry:" + expiry + " }";
+        return "{ id:" + id + ", name:" + name + ", value:" + value + ", created:" + created + ", expiry:" + expiry + " }";
     }
     
 }

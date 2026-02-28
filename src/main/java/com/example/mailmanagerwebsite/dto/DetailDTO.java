@@ -13,8 +13,10 @@ public class DetailDTO implements Serializable {
     private DetailId id;
     private boolean seen;
     private boolean starred;
+    private boolean draft;
     private boolean trashed;
     private LocalDateTime received;
+    private EmailDTO email;
 
     public DetailId getId() {
         return id;
@@ -40,6 +42,14 @@ public class DetailDTO implements Serializable {
         this.starred = starred;
     }
 
+    public boolean isDraft() {
+        return draft;
+    }
+
+    public void setDraft(boolean draft) {
+        this.draft = draft;
+    }
+
     public boolean isTrashed() {
         return trashed;
     }
@@ -56,13 +66,21 @@ public class DetailDTO implements Serializable {
         this.received = received;
     }
 
+    public EmailDTO getEmail() {
+        return email;
+    }
+
+    public void setEmail(EmailDTO email) {
+        this.email = email;
+    }
+
     public static DetailDTO convert(Detail detail) {
         DetailDTO detailDTO = new DetailDTO();
         detailDTO.setId(detail.getId());
         detailDTO.setSeen(detail.isSeen());
         detailDTO.setStarred(detail.isStarred());
-        detailDTO.setTrashed(detail.isTrashed());
         detailDTO.setReceived(detail.getReceived());
+        detailDTO.setEmail(EmailDTO.convert(detail.getEmail()));
         return detailDTO;
     }
 
@@ -71,14 +89,14 @@ public class DetailDTO implements Serializable {
         detail.setId(detailDTO.getId());
         detail.setSeen(detailDTO.isSeen());
         detail.setStarred(detailDTO.isStarred());
-        detail.setTrashed(detailDTO.isTrashed());
         detail.setReceived(detailDTO.getReceived());
+        detail.setEmail(EmailDTO.revert(detailDTO.getEmail()));
         return detail;
     }
 
     @Override
     public String toString() {
-        return String.format("{ id: %s, seen: %b, starred: %b, trashed: %b, received: %s }", id, seen, starred, trashed, received.toString());
+        return String.format("{ id: %s, seen: %b, starred: %b, received: %s }", id, seen, starred, received.toString());
     }
 
 }

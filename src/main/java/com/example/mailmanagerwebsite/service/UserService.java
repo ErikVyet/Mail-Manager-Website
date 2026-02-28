@@ -18,7 +18,7 @@ import com.example.mailmanagerwebsite.repository.UserRepository;
 @Service
 public class UserService {
 
-    private final UserRepository repository;
+    protected final UserRepository repository;
 
     public UserService(UserRepository repository) {
         this.repository = repository;
@@ -38,27 +38,33 @@ public class UserService {
     public Optional<UserDTO> getUserForLogin(UserLoginRequest req) {
         req.setPassword(DigestUtils.sha256Hex(req.getVmail() + req.getPassword()));
         Optional<User> opt = repository.findByVmailAndPassword(req.getVmail(), req.getPassword());
-        Optional<UserDTO> optDTO = Optional.empty();
         if (opt.isPresent()) {
             User user = opt.get();
             user.setLogin(LocalDateTime.now());
-            this.repository.save(user);
-            optDTO = Optional.of(UserDTO.convert(user));
+            try {
+                return Optional.of(UserDTO.convert(this.repository.save(user)));
+            }
+            catch (Exception exception) {
+                System.out.println(exception.getMessage());
+            }
         }
-        return optDTO;
+        return Optional.empty();
     }
 
     @Transactional
     public Optional<UserDTO> getUserForLogin(int id) {
         Optional<User> opt = repository.findById(id);
-        Optional<UserDTO> optDTO = Optional.empty();
         if (opt.isPresent()) {
             User user = opt.get();
             user.setLogin(LocalDateTime.now());
-            this.repository.save(user);
-            optDTO = Optional.of(UserDTO.convert(user));
+            try {
+                return Optional.of(UserDTO.convert(this.repository.save(user)));
+            }
+            catch (Exception exception) {
+                System.out.println(exception.getMessage());
+            }
         }
-        return optDTO;
+        return Optional.empty();
     }
 
     @Transactional
@@ -81,8 +87,12 @@ public class UserService {
             user.setPhone(req.getPhone());
             user.setCreated(LocalDateTime.now());
             user.setStatus(Status.ACTIVE);
-            this.repository.save(user);
-            return Optional.of(UserDTO.convert(user));
+            try {
+                return Optional.of(UserDTO.convert(this.repository.save(user)));
+            }
+            catch (Exception exception) {
+                System.out.println(exception.getMessage());
+            }
         }
         return Optional.empty();
     }
@@ -94,8 +104,13 @@ public class UserService {
         if (opt.isPresent()) {
             User user = opt.get();
             user.setPassword(req.getPassword());
-            this.repository.save(user);
-            return true;
+            try {
+                this.repository.save(user);
+                return true;
+            }
+            catch (Exception exception) {
+                System.out.println(exception.getMessage());
+            }
         }
         return false;
     }
