@@ -13,7 +13,24 @@ public class EmailDTO implements Serializable {
     private String subject;
     private String body;
     private LocalDateTime sent;
-    private String sender;
+    private UserDTO sender;
+
+    public EmailDTO() { }
+
+    public EmailDTO(String subject, String body, LocalDateTime sent, UserDTO sender) {
+        this.subject = subject;
+        this.body = body;
+        this.sent = sent;
+        this.sender = sender;
+    }
+
+    public EmailDTO(int id, String subject, String body, LocalDateTime sent, UserDTO sender) {
+        this.id = id;
+        this.subject = subject;
+        this.body = body;
+        this.sent = sent;
+        this.sender = sender;
+    }
 
     public int getId() {
         return id;
@@ -47,11 +64,11 @@ public class EmailDTO implements Serializable {
         this.sent = sent;
     }
 
-    public String getSender() {
+    public UserDTO getSender() {
         return sender;
     }
 
-    public void setSender(String sender) {
+    public void setSender(UserDTO sender) {
         this.sender = sender;
     }
 
@@ -61,7 +78,7 @@ public class EmailDTO implements Serializable {
         emailDTO.setSubject(email.getSubject());
         emailDTO.setBody(email.getBody());
         emailDTO.setSent(email.getSent());
-        emailDTO.setSender(email.getSender().getUsername());
+        emailDTO.setSender(UserDTO.convert(email.getSender()));
         return emailDTO;
     }
 
@@ -71,6 +88,7 @@ public class EmailDTO implements Serializable {
         email.setSubject(emailDTO.getSubject());
         email.setBody(emailDTO.getBody());
         email.setSent(emailDTO.getSent());
+        email.setSender(UserDTO.revert(emailDTO.getSender()));
         return email;
     }
 

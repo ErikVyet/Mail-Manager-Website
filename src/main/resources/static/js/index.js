@@ -37,6 +37,15 @@ window.onload = async function() {
     }
 }
 
+function base64ToBytes(base64) {
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes;
+}
+
 function expandNav(button) {
     const navLabels = document.getElementsByClassName('nav-label')[0];
     navLabels.style.display = 'block';
@@ -146,7 +155,6 @@ async function navItemActive(index, folderId) {
     for (const [key, value] of Object.entries(data)) {
         const tr = document.createElement('tr');
         tr.className = value.seen ? '' : 'unread-mail';
-        tr.onclick = () => showMailDetail(Number.parseInt(key));
         tr.onmouseover = () => onTableRowMouseOver(tr);
         tr.onmouseout = () => onTableRowMouseOut(tr);
 
@@ -167,13 +175,13 @@ async function navItemActive(index, folderId) {
         starred.value = value.starred;
         starred.name = 'starred';
 
-        const svg = document.createElement('svg');
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svg.setAttribute('width', '1.4vw');
         svg.setAttribute('viewBox', '0 0 200 200');
 
-        const polygon = document.createElement('polygon');
+        const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
         polygon.setAttribute('points', '100,10 120,75 190,75 135,115 155,180 100,140 45,180 65,115 10,75 80,75');
-        polygon.className = value.starred ? 'starred-icon' : 'unstarred-icon';
+        polygon.setAttribute('class', value.starred ? 'starred-icon' : 'unstarred-icon');
 
         const seen = document.createElement('input');
         seen.type = 'hidden';
@@ -188,14 +196,13 @@ async function navItemActive(index, folderId) {
         svg.appendChild(polygon);
         button.appendChild(starred);
         button.appendChild(svg);
-        td.appendChild(input);
         td.appendChild(button);
         td.appendChild(seen);
         td.appendChild(id);
         tr.appendChild(td);
 
         td = document.createElement('td');
-        td.textContent = value.email.sender;
+        td.textContent = value.email.sender.username;
         td.onclick = () => showMailDetail(Number.parseInt(key));
         tr.appendChild(td);
 
@@ -634,11 +641,47 @@ function openDraftEmailDialog() {
     window.blur();
 }
 
-function closeDraftEmailDialog(option) {
+async function closeDraftEmailDialog(option) {
     const dialog = document.getElementsByClassName('draft-email-dialog')[0];
     const fields = dialog.getElementsByClassName('draft-email-dialog-field');
     if (option == 'save') {
-        // Backend implementations here
+        const id = document.getElementsByName('draft-id')[0].value;
+        const subject = document.getElementsByName('draft-subject')[0].value;
+        const body = document.getElementsByName('draft-body')[0].innerHTML;
+
+        const data = new FormData();
+        data.append('mailId', id);
+        data.append('subject', subject);
+        data.append('body', body);
+        for (let i = 0; i < attachedFiles.length; i++) {
+            data.append('attachments', attachedFiles[i]);
+        }
+        for (let j = 0; j < attachedImages.length; j++) {
+            data.append('attachments', attachedImages[j]);
+        }
+
+        const response = await fetch('/mail/save', {
+            method: 'POST',
+            body: data
+        });
+        const result = await response.json();
+        if (!result.success) {
+            alert('Failed to save draft email');
+            return;
+        }
+    }
+    else if (option == 'delete') {
+        const id = document.getElementsByName('draft-id')[0].value;
+        const response = await fetch('/mail/delete', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mailId: id })
+        });
+        const result = await response.json();
+        if (!result.success) {
+            alert('Failed to delete draft email');
+            return;
+        }
     }
     for (let i = 0; i < fields.length - 1; i++) {
         const input = fields[i].getElementsByTagName('input')[0];
@@ -655,6 +698,42 @@ function closeDraftEmailDialog(option) {
     draftBodyAttachedFiles.style.display = 'none';
     dialog.close();
     window.focus();
+    navItemActive(activeNavIndex, document.getElementsByName('draft-folder-id')[0].value);
+}
+
+//
+async function sendDraftEmail() {
+    const id = document.getElementsByName('draft-id')[0].value;
+    const to = document.getElementsByName('to')[0].value;
+    const cc = document.getElementsByName('cc')[0].value;
+    const bcc = document.getElementsByName('bcc')[0].value;
+    const subject = document.getElementsByName('draft-subject')[0].value;
+    const body = document.getElementsByName('draft-body')[0].innerHTML;
+
+    const data = new FormData();
+    data.append('mailId', id);
+    data.append('to', to);
+    data.append('cc', cc);
+    data.append('bcc', bcc);
+    data.append('subject', subject);
+    data.append('body', body);
+    for (let i = 0; i < attachedFiles.length; i++) {
+        data.append('attachments', attachedFiles[i]);
+    }
+    for (let j = 0; j < attachedImages.length; j++) {
+        data.append('attachments', attachedImages[j]);
+    }
+
+    const response = await fetch('/mail/send', {
+        method: 'POST',
+        body: data
+    });
+    const result = await response.json();
+    if (!result.success) {
+        alert('Failed to send draft email');
+        return;
+    }
+    closeDraftEmailDialog(null);
 }
 
 function onDraftEmailDialogFieldFocus(input) {
@@ -732,10 +811,17 @@ function onAttachFilesInputChange(input) {
         removeButton.onclick = () => removeAttachment(removeButton, file);
         fileElement.title = file.name;
         fileElement.appendChild(removeButton);
+        fileElement.onclick = async () => {
+            const blob = new Blob([await file.bytes()], { type: file.type });
+            const url = URL.createObjectURL(blob);
+            window.open(url);
+            URL.revokeObjectURL(url);
+        };
         draftBodyAttachedFiles.appendChild(fileElement);
     }
     draftBody.style.height = '68%';
     draftBodyAttachedFiles.style.display = 'flex';
+    input.value = '';
 }
 
 function onAttachImagesInputChange(input) {
@@ -751,17 +837,39 @@ function onAttachImagesInputChange(input) {
         removeButton.onclick = () => removeAttachment(removeButton, file);
         fileElement.title = file.name;
         fileElement.appendChild(removeButton);
+        fileElement.onclick = async () => {
+            const blob = new Blob([await file.bytes()], { type: file.type });
+            const url = URL.createObjectURL(blob);
+            window.open(url);
+            URL.revokeObjectURL(url);
+        };
         draftBodyAttachedFiles.appendChild(fileElement);
     }
     draftBody.style.height = '68%';
     draftBodyAttachedFiles.style.display = 'flex';
+    input.value = '';
 }
 
-function removeAttachment(button, file) {
+async function removeAttachment(button, file) {
+    event.stopPropagation();
     const fileElement = button.parentElement;
     const draftBody = document.getElementsByName('draft-body')[0];
     const draftBodyAttachedFiles = document.getElementsByClassName('draft-body-attached-files')[0];
-    if (file.type.startsWith('image/')) {
+    if (file == null) {
+        const input = button.querySelector('input');
+        const attachmentId = input.value;
+        const response = await fetch('/attachment/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ attachmentId: attachmentId })
+        });
+        const data = await response.json();
+        if (!data.success) {
+            alert('Something went wrong!');
+            return;
+        }
+    }
+    else if (file.type.startsWith('image/')) {
         attachedImages.splice(attachedImages.indexOf(file), 1);
     }
     else {
@@ -795,13 +903,113 @@ function closeMailFilterDialog() {
     clearMailFilterFields();
 }
 
-function showMailDetail(mailId) {
-    
+async function showMailDetail(mailId) {
+    try {
+        var response = await fetch("/mail/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json"},
+            body: JSON.stringify({ mailId: mailId })
+        });
+        var data = await response.json();
+        if (!data.success) {
+            alert("Something went wrong!");
+            return;
+        }
+        const mail = data.mail;
+        
+        response = await fetch("/attachment/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mailId: mailId })
+        });
+        data = await response.json();
+        if (!data.success) {
+            alert("Something went wrong!");
+            return;
+        }
+        const attachments = data.attachments;
+        const date = new Date(mail.sent);
 
-    const mailListContainer = document.getElementsByClassName('mail-list')[0];
-    const mailDetailContainer = document.getElementsByClassName('mail-content')[0];
-    mailListContainer.style.display = 'none';
-    mailDetailContainer.style.display = 'block';
+        if (activeNavIndex == 3) {
+            document.getElementsByName('draft-id')[0].value = mail.id;
+            document.getElementsByName('draft-subject')[0].value = mail.subject;
+            document.getElementsByName('draft-body')[0].innerHTML = mail.body;
+            if (attachments.length > 0) {
+                const draftBodyAttachedFiles = document.getElementsByClassName('draft-body-attached-files')[0];
+                attachments.forEach(attachment => {
+                    const div = document.createElement('div');
+                    const button = document.createElement('button');
+                    const extension = attachment.mime.split('/').pop();
+                    const input = document.createElement('input');
+                    input.type = "hidden";
+                    input.value = attachment.id;
+                    div.appendChild(input);
+                    if (extension.includes("jpg") || extension.includes("png") || extension.includes("jpeg") || extension.includes("gif")) {
+                        div.className = "attached-image";
+                        div.title = attachment.name;
+                        button.title = "Remove attached image";
+                    }
+                    else {
+                        div.className = "attached-file";
+                        div.title = attachment.name;
+                        button.title = "Remove attached file";
+                    }
+                    button.appendChild(input);
+                    button.onclick = () => removeAttachment(button, null);
+                    div.appendChild(button);
+                    div.onclick = () => {
+                        const bytes = base64ToBytes(attachment.data);
+                        const blob = new Blob([bytes], {type: attachment.mime});
+                        const url = URL.createObjectURL(blob);
+                        window.open(url);
+                        URL.revokeObjectURL(url);
+                    };
+                    document.getElementsByName('draft-body')[0].style.height = '68%';
+                    draftBodyAttachedFiles.appendChild(div);
+                });
+                draftBodyAttachedFiles.style.display = 'flex';
+            }
+            
+            openDraftEmailDialog();
+        }
+        else {
+            document.getElementsByClassName('mail-content-detail-title')[0].textContent = mail.subject;
+            document.getElementsByClassName('mail-content-detail-sender-username')[0].textContent = mail.sender.username;
+            document.getElementsByClassName('mail-content-detail-sender-vmail')[0].textContent = "<" + mail.sender.vmail + ">";
+            document.getElementsByClassName('mail-content-detail-date')[0].textContent = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+            document.getElementsByClassName('mail-content-detail-body')[0].innerHTML = mail.body;
+
+            const footer = document.getElementsByClassName('mail-content-detail-footer')[0];
+            attachments.forEach(attachment => {
+                const div = document.createElement('div');
+                const extension = attachment.mime.split('/').pop();
+                if (extension.includes("jpg") || extension.includes("png") || extension.includes("jpeg") || extension.includes("gif")) {
+                    div.className = "mail-content-detail-attached-image";
+                    const input = document.createElement('input');
+                    input.type = "image";
+                    input.setAttribute("hidden", "hidden");
+                    div.appendChild(input);
+                }
+                else {
+                    div.className = "mail-content-detail-attached-file";
+                    const input = document.createElement('input');
+                    input.type = "file";
+                    input.setAttribute("hidden", "hidden");
+                    div.appendChild(input);
+                }
+                footer.appendChild(div);
+            });
+
+            const mailListContainer = document.getElementsByClassName('mail-list')[0];
+            const mailDetailContainer = document.getElementsByClassName('mail-content')[0];
+            mailListContainer.style.display = 'none';
+            mailDetailContainer.style.display = 'block';
+        }
+    } 
+    catch (error) {
+        alert("Something went wrong!");
+        return;
+    }
 }
 
 function showMailList() {

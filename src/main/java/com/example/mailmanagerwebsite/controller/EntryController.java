@@ -248,7 +248,7 @@ public class EntryController {
             session.setAttribute("activeNavIndex", activeNavIndex);
             List<DetailDTO> detailDTOs = this.detailService.getDetailsByFolderId(userDTO.getId(), Integer.parseInt(activeFolderId));
             model.addAttribute("details", detailDTOs);
-
+            
             return "index";
         }
         catch(Exception exception) {

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,20 +32,20 @@ public class Email implements Serializable {
     @Column(name = "body", nullable = false, columnDefinition = "text")
     private String body;
 
-    @Column(name = "sent", nullable = false, columnDefinition = "timestamp")
+    @Column(name = "sent", nullable = true, columnDefinition = "timestamp")
     private LocalDateTime sent;
 
     @ManyToOne
     @JoinColumn(name = "sender")
     private User sender;
 
-    @OneToMany(mappedBy = "email")
+    @OneToMany(mappedBy = "email", cascade = CascadeType.REMOVE)
     private List<Recipient> recipients;
 
-    @OneToMany(mappedBy = "email")
+    @OneToMany(mappedBy = "email", cascade = CascadeType.REMOVE)
     private List<Attachment> attachments;
 
-    @OneToMany(mappedBy = "email")
+    @OneToMany(mappedBy = "email", cascade = CascadeType.REMOVE)
     private List<Detail> details;
 
     public Email() {

@@ -15,6 +15,28 @@ public class AttachmentDTO implements Serializable {
     private int size;
     private String mime;
     private LocalDateTime uploaded;
+    private int email_id;
+
+    public AttachmentDTO() { }
+
+    public AttachmentDTO(int id, String name, byte[] data, int size, String mime, LocalDateTime uploaded, int email_id) {
+        this.id = id;
+        this.name = name;
+        this.data = data;
+        this.size = size;
+        this.mime = mime;
+        this.uploaded = uploaded;
+        this.email_id = email_id;
+    }
+
+    public AttachmentDTO(String name, byte[] data, int size, String mime, LocalDateTime uploaded, int email_id) {
+        this.name = name;
+        this.data = data;
+        this.size = size;
+        this.mime = mime;
+        this.uploaded = uploaded;
+        this.email_id = email_id;
+    }
 
     public int getId() {
         return id;
@@ -64,6 +86,14 @@ public class AttachmentDTO implements Serializable {
         this.uploaded = uploaded;
     }
 
+    public int getEmail_id() {
+        return email_id;
+    }
+
+    public void setEmail_id(int email_id) {
+        this.email_id = email_id;
+    }
+
     public static AttachmentDTO convert(Attachment attachment) {
         AttachmentDTO attachmentDTO = new AttachmentDTO();
         attachmentDTO.setId(attachment.getId());
@@ -72,6 +102,7 @@ public class AttachmentDTO implements Serializable {
         attachmentDTO.setSize(attachment.getSize());
         attachmentDTO.setMime(attachment.getMime());
         attachmentDTO.setUploaded(attachment.getUploaded());
+        attachmentDTO.setEmail_id(attachment.getEmail().getId());
         return attachmentDTO;
     }
 

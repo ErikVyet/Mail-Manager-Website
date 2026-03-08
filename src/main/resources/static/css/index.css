@@ -479,17 +479,14 @@ main {
         border-bottom: rgba(220, 220, 220, 0.1) solid 0.1vw;
         cursor: pointer;
 
-        &:hover {
-            box-shadow: 0.1vw 0.1vw 1vw rgba(255, 255, 255, 0.1);
-        }
-    }
-
-    & tr {
         & td:first-child {
             width: 7.25vw;
             text-align: center;
             gap: 0.5vw;
             opacity: 0.5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         & td:nth-child(2) {
@@ -510,6 +507,10 @@ main {
 
         & td:last-child {
             text-align: center;
+        }
+
+        &:hover {
+            box-shadow: 0.1vw 0.1vw 1vw rgba(255, 255, 255, 0.1);
         }
     }
 }
@@ -598,6 +599,14 @@ main {
     }
 }
 
+.mail-content-detail-sender-vmail {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.mail-content-detail-date {
+    color: rgba(255, 255, 255, 0.5);
+}
+
 .mail-content-detail-body {
     width: 96%;
     margin: 1vw auto;
@@ -642,7 +651,7 @@ main {
 }
 
 .select-checkbox {
-    margin-top: 0.6vw;
+    margin-top: 0.65vw;
     width: 1.3vw;
     height: 1.3vw;
     position: relative;
@@ -671,8 +680,8 @@ main {
     background: none;
     border: none;
     border-radius: 100vw;
+    margin-bottom: -0.6vw;
     transition: background-color 0.15s;
-
     &:hover {
         background-color: rgba(220, 220, 220, 0.1);
         transition: background-color 0.15s;
@@ -698,9 +707,11 @@ main {
 
 .mail-list-table tfoot {
     height: 5vw;
-
     & tr {
         border-bottom: none;
+        & td {
+            text-align: center;
+        }
     }
 }
 

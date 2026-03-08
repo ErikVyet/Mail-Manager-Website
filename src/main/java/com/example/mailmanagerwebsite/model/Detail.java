@@ -28,7 +28,7 @@ public class Detail implements Serializable {
     @Column(name = "starred", nullable = false, columnDefinition = "boolean")
     private boolean starred;
 
-    @Column(name = "received", nullable = false, columnDefinition = "timestamp")
+    @Column(name = "received", nullable = true, columnDefinition = "timestamp")
     private LocalDateTime received;
 
     @ManyToOne
@@ -37,8 +37,7 @@ public class Detail implements Serializable {
     private Email email;
 
     @ManyToOne
-    @MapsId("user_id")
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
     @ManyToOne

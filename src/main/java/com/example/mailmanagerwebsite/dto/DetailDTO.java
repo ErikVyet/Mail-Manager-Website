@@ -13,7 +13,6 @@ public class DetailDTO implements Serializable {
     private DetailId id;
     private boolean seen;
     private boolean starred;
-    private boolean draft;
     private boolean trashed;
     private LocalDateTime received;
     private EmailDTO email;
@@ -40,14 +39,6 @@ public class DetailDTO implements Serializable {
 
     public void setStarred(boolean starred) {
         this.starred = starred;
-    }
-
-    public boolean isDraft() {
-        return draft;
-    }
-
-    public void setDraft(boolean draft) {
-        this.draft = draft;
     }
 
     public boolean isTrashed() {

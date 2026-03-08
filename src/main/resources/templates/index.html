@@ -57,7 +57,7 @@
                     <button th:onclick="'navItemActive(3, ' + ${systemFolders[2].id} + ')'" onmouseover="navItemHover(3)" onmouseout="navItemOut(3)" title="Drafts">
                         <img src="/image/draft.png">
                     </button>
-                    <input type="hidden" th:value="${systemFolders[2].id}">
+                    <input type="hidden" name="draft-folder-id" th:value="${systemFolders[2].id}">
                 </li>
                 <li>
                     <button onclick="navItemActive(4, -2)" onmouseover="navItemHover(4)" onmouseout="navItemOut(4)" title="All Mail">
@@ -161,7 +161,7 @@
                                     <input type="hidden" th:value="${detail.seen}" name="seen">
                                     <input type="hidden" th:value="${detail.id}" name="id">
                                 </td>
-                                <td th:onclick="'showMailDetail(' + ${detail.email.id} + ')'" th:text="${detail.email.sender}"></td>
+                                <td th:onclick="'showMailDetail(' + ${detail.email.id} + ')'" th:text="${detail.email.sender.username}"></td>
                                 <td th:onclick="'showMailDetail(' + ${detail.email.id} + ')'" th:text="${detail.email.body}"></td>
                                 <td th:onclick="'showMailDetail(' + ${detail.email.id} + ')'" th:text="${#temporals.format(detail.received, 'dd/MM/yyyy')}"></td>
                             </tr>
@@ -185,7 +185,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="4">123</td>
+                                <td colspan="4">Vmail</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -196,21 +196,21 @@
                     <button onclick="showMailList()" title="Back"></button>
                 </div>
                 <div class="mail-content-detail">
-                    <h2 class="mail-content-detail-title">[GitHub]</h2>
+                    <h2 class="mail-content-detail-title"></h2>
                     <div class="mail-content-detail-header">
                         <div>
-                            <img src="/image/user.png">
-                            <b>GitHub</b>
-                            <span>noreply@github.com</span>
+                            <img class="mail-content-detail-sender-avatar" src="/image/user.png">
+                            <b class="mail-content-detail-sender-username"></b>
+                            <span class="mail-content-detail-sender-vmail"></span>
                         </div>
-                        <span>01/01/2004</span>
+                        <span class="mail-content-detail-date"></span>
                     </div>
                     <div class="mail-content-detail-body">
-                        ABC
+
                     </div>
                     <div class="mail-content-detail-footer">
-                        <div class="mail-content-detail-attached-file"><input type="file" hidden></div>
-                        <div class="mail-content-detail-attached-image"><input type="image" hidden></div>
+                        <!-- <div class="mail-content-detail-attached-file"><input type="file" hidden></div>
+                        <div class="mail-content-detail-attached-image"><input type="image" hidden></div> -->
                     </div>
                 </div>
             </div>
@@ -263,7 +263,8 @@
             <div class="draft-email-dialog-header">
                 <h4>New Message</h4>
                 <div>
-                    <button onclick="closeDraftEmailDialog('save')" title="Save & close">
+                    <button id="close-draft-email-button" onclick="closeDraftEmailDialog('save')" title="Save & close">
+                        <input type="hidden" name="draft-id" value="">
                         <img src="/image/close.png">
                     </button>
                 </div>
@@ -289,18 +290,17 @@
                     <div name="draft-body" contenteditable="true"></div>
 					<div class="draft-body-attached-files">
                         <!-- <div class="attached-file" title="Attached file">
-                            <button onclick="" title="Remove attached file"></button>
+                            <button onclick="" title="Remove attached file"><input type="hidden" value=""></button>
                         </div>
                         <div class="attached-image" title="Attached image">
-                            <button onclick="" title="Remove attached image"></button>
+                            <button onclick="" title="Remove attached image"><input type="hidden" value=""></button>
                         </div> -->
                     </div>
                 </div>
-				
             </div>
             <div class="draft-email-dialog-buttons">
                 <div>
-                    <button onclick="">Send</button>
+                    <button onclick="sendDraftEmail()">Send</button>
                     <button onclick="this.getElementsByTagName('input')[0].click()" title="Attach files">
 						<input type="file" accept="text/*,application/*" oninput="onAttachFilesInputChange(this)" multiple hidden/>
                         <img src="/image/attachment.png">
@@ -314,7 +314,7 @@
                     </button>
                 </div>
                 <div>
-                    <button onclick="closeDraftEmailDialog(null)" title="Discard draft">
+                    <button onclick="closeDraftEmailDialog('delete')" title="Discard draft">
                         <img src="/image/trash.png">
                     </button>
                 </div>
